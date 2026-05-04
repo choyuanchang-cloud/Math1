@@ -1,0 +1,1192 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>借位減法練習板</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5fbf8;
+      --paper: #fffdf7;
+      --ink: #17242d;
+      --muted: #69787f;
+      --line: #24313a;
+      --soft: #d6e4df;
+      --teal: #087f8c;
+      --blue: #356ac3;
+      --coral: #e95d4f;
+      --yellow: #f2c14e;
+      --green: #219b6d;
+      --right: #dff4e8;
+      --wrong: #ffd9d4;
+      --focus: #fff0b8;
+      --radius: 8px;
+      --shadow: 0 18px 48px rgba(35, 49, 58, 0.13);
+      --digit: 92px;
+      --sign: 58px;
+      font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(8, 127, 140, 0.08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(233, 93, 79, 0.045) 1px, transparent 1px),
+        var(--bg);
+      background-size: 34px 34px;
+    }
+
+    button,
+    input {
+      font: inherit;
+      touch-action: manipulation;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding: 14px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: var(--radius);
+      color: #ffffff;
+      background: conic-gradient(from 180deg, var(--yellow), var(--coral), var(--teal), var(--yellow));
+      font-size: 1.8rem;
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.55rem;
+      line-height: 1.15;
+    }
+
+    .title p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .digits {
+      display: grid;
+      grid-template-columns: repeat(4, 48px);
+      gap: 6px;
+      padding: 5px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #f7faf8;
+    }
+
+    .digits button,
+    .action {
+      min-height: 48px;
+      border-radius: 6px;
+      font-weight: 900;
+    }
+
+    .digits button {
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .digits button[aria-pressed="true"] {
+      color: #ffffff;
+      background: var(--teal);
+    }
+
+    .action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      color: var(--ink);
+      border: 1px solid var(--soft);
+      background: #ffffff;
+    }
+
+    .action.primary {
+      color: #ffffff;
+      border-color: var(--coral);
+      background: var(--coral);
+    }
+
+    .practice {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 306px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .stage,
+    .side {
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .stage {
+      overflow: hidden;
+    }
+
+    .coach {
+      display: grid;
+      grid-template-columns: 46px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-bottom: 1px solid var(--soft);
+      background: #fbfdfc;
+    }
+
+    .step-number {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 6px;
+      color: #ffffff;
+      background: var(--blue);
+      font-size: 1.2rem;
+      font-weight: 950;
+    }
+
+    .coach-title {
+      margin: 0 0 4px;
+      font-weight: 950;
+      font-size: 1.16rem;
+    }
+
+    .coach-text {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .paper-wrap {
+      overflow-x: auto;
+      padding: 18px;
+      overscroll-behavior-x: contain;
+    }
+
+    .paper {
+      width: max-content;
+      min-width: calc(var(--sign) + var(--cols) * var(--digit) + (var(--cols) + 1) * 8px + 42px);
+      margin: 0 auto;
+      padding: 18px 20px 20px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(36, 49, 58, 0.055) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(36, 49, 58, 0.055) 1px, transparent 1px),
+        var(--paper);
+      background-size: 26px 26px;
+    }
+
+    .problem-line {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 12px;
+      font-size: 1.55rem;
+      font-weight: 950;
+    }
+
+    .problem-line span {
+      display: inline-grid;
+      place-items: center;
+      min-width: 40px;
+      min-height: 38px;
+      border-radius: 6px;
+      background: #eaf4f0;
+    }
+
+    .math-grid {
+      display: grid;
+      grid-template-columns: var(--sign) repeat(var(--cols), var(--digit));
+      gap: 8px;
+      align-items: center;
+    }
+
+    .place-row {
+      margin-bottom: 8px;
+    }
+
+    .place,
+    .row-label {
+      min-height: 30px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .place {
+      border-radius: 6px;
+      background: #eef7f3;
+    }
+
+    .note-row {
+      margin-bottom: 4px;
+    }
+
+    .note-input {
+      width: 62px;
+      height: 44px;
+      justify-self: center;
+      border: 2px solid var(--soft);
+      border-radius: 8px;
+      outline: none;
+      color: var(--coral);
+      background: #ffffff;
+      text-align: center;
+      font-size: 1.32rem;
+      font-weight: 950;
+    }
+
+    .note-input.bottom-note {
+      position: absolute;
+      top: 7px;
+      right: -16px;
+      z-index: 2;
+      width: 44px;
+      height: 42px;
+      color: var(--blue);
+      background: #fffef7;
+    }
+
+    .note-input:focus,
+    .answer-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 4px rgba(8, 127, 140, 0.14);
+    }
+
+    .number-row {
+      margin-bottom: 8px;
+    }
+
+    .number-cell,
+    .operator {
+      height: var(--digit);
+      border-radius: 6px;
+      font-weight: 950;
+    }
+
+    .number-cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      border: 2px solid #b9c9c3;
+      background: #ffffff;
+      color: var(--ink);
+      font-size: 2.4rem;
+      user-select: none;
+    }
+
+    .number-cell.blank {
+      color: transparent;
+      border-style: dashed;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .number-cell.slash::after {
+      content: "";
+      position: absolute;
+      width: 70%;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--coral);
+      transform: rotate(-17deg);
+    }
+
+    .number-cell.circle::before {
+      content: "";
+      position: absolute;
+      width: 72%;
+      height: 72%;
+      border: 4px solid var(--blue);
+      border-radius: 999px;
+    }
+
+    .operator {
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--teal);
+      font-size: 2.05rem;
+    }
+
+    .rule {
+      height: 5px;
+      margin: 10px 0 12px;
+      border-radius: 999px;
+      background: var(--line);
+    }
+
+    .answer-input {
+      width: 100%;
+      aspect-ratio: 1;
+      min-height: var(--digit);
+      border: 2px solid var(--soft);
+      border-radius: 6px;
+      outline: none;
+      background: #fffefa;
+      color: var(--ink);
+      text-align: center;
+      font-size: 2.3rem;
+      font-weight: 950;
+    }
+
+    .answer-input.good,
+    .note-input.good {
+      border-color: var(--green);
+      background: var(--right);
+    }
+
+    .answer-input.bad,
+    .note-input.bad,
+    .number-cell.bad {
+      border-color: var(--coral);
+      background: var(--wrong);
+    }
+
+    .number-cell.good {
+      border-color: var(--green);
+      background: var(--right);
+    }
+
+    .focus-target {
+      border-color: var(--yellow);
+      background: var(--focus);
+      box-shadow: inset 0 0 0 3px rgba(242, 193, 78, 0.25);
+    }
+
+    .side {
+      position: sticky;
+      top: 12px;
+      padding: 14px;
+    }
+
+    .result {
+      margin-bottom: 12px;
+      padding: 12px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #f7faf8;
+      line-height: 1.5;
+    }
+
+    .result.good {
+      border-color: #99d9b9;
+      background: var(--right);
+    }
+
+    .result.bad {
+      border-color: #f2a69e;
+      background: var(--wrong);
+    }
+
+    .result strong,
+    .pad strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .mini-steps {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-steps li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      align-items: center;
+      min-height: 42px;
+      padding: 8px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #fbfdfc;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .mini-steps span {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      color: #ffffff;
+      background: var(--muted);
+      font-weight: 950;
+    }
+
+    .mini-steps li.active span {
+      background: var(--blue);
+    }
+
+    .mini-steps li.done span {
+      background: var(--green);
+    }
+
+    .pad {
+      padding: 12px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #f7faf8;
+    }
+
+    .pad-status {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .pad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .pad-key {
+      min-height: 58px;
+      border: 1px solid #cbd8d4;
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      font-size: 1.35rem;
+      font-weight: 950;
+    }
+
+    .pad-key.command {
+      color: #ffffff;
+      background: var(--teal);
+      border-color: var(--teal);
+      font-size: 1rem;
+    }
+
+    .pad-key.warn {
+      background: #fff4cd;
+      border-color: #e5c252;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 1020px) {
+      :root {
+        --digit: 86px;
+        --sign: 54px;
+      }
+
+      .top {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .controls {
+        justify-content: stretch;
+      }
+
+      .digits {
+        flex: 1;
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .practice {
+        grid-template-columns: 1fr;
+      }
+
+      .coach {
+        grid-template-columns: 42px 1fr;
+      }
+
+      .coach .action {
+        grid-column: 1 / -1;
+      }
+
+      .side {
+        position: static;
+      }
+
+      .pad {
+        position: sticky;
+        bottom: 10px;
+        z-index: 4;
+      }
+    }
+
+    @media (max-width: 680px) {
+      :root {
+        --digit: 76px;
+        --sign: 48px;
+      }
+
+      .app {
+        width: min(100% - 16px, 1180px);
+        padding-top: 10px;
+      }
+
+      .paper-wrap {
+        padding: 12px;
+      }
+
+      .paper {
+        padding: 14px;
+      }
+
+      .number-cell,
+      .operator,
+      .answer-input {
+        font-size: 1.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="title">
+        <div class="mark" aria-hidden="true">借</div>
+        <div>
+          <h1>借位減法練習板</h1>
+          <p>像影片一樣：劃掉、圈起來、在旁邊寫小數字。</p>
+        </div>
+      </div>
+      <div class="controls" aria-label="練習設定">
+        <div class="digits" role="group" aria-label="選擇位數">
+          <button type="button" data-digits="2" aria-pressed="true">2</button>
+          <button type="button" data-digits="3" aria-pressed="false">3</button>
+          <button type="button" data-digits="4" aria-pressed="false">4</button>
+          <button type="button" data-digits="5" aria-pressed="false">5</button>
+        </div>
+        <button class="action" type="button" id="newProblem">新題目</button>
+        <button class="action primary" type="button" id="checkAnswer">檢查</button>
+      </div>
+    </header>
+
+    <section class="practice">
+      <section class="stage" aria-label="借位減法操作區">
+        <div class="coach">
+          <div class="step-number" id="stepNumber">1</div>
+          <div>
+            <p class="coach-title" id="coachTitle">先看個位</p>
+            <p class="coach-text" id="coachText">如果上面的數不夠減，就向左邊借 1。</p>
+          </div>
+          <button class="action" type="button" id="clearWork">擦掉重做</button>
+        </div>
+
+        <div class="paper-wrap">
+          <div class="paper" id="paper" style="--cols: 2">
+            <div class="problem-line" id="problemLine"></div>
+            <div class="math-grid place-row" id="placeRow"></div>
+            <div class="math-grid note-row" id="topNoteRow"></div>
+            <div class="math-grid number-row" id="topRow"></div>
+            <div class="math-grid number-row" id="bottomRow"></div>
+            <div class="rule" aria-hidden="true"></div>
+            <div class="math-grid answer-row" id="answerRow"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="步驟與平板輸入">
+        <div class="result" id="resultBox">
+          <strong>現在要做</strong>
+          <span id="resultText">先點最右邊的答案格。</span>
+        </div>
+
+        <ul class="mini-steps" id="miniSteps">
+          <li><span>1</span>看這一欄夠不夠減</li>
+          <li><span>2</span>不夠就劃左邊、寫少 1</li>
+          <li><span>3</span>圈下面、寫補到 10</li>
+          <li><span>4</span>寫答案</li>
+        </ul>
+
+        <div class="pad" aria-label="平板數字板">
+          <strong>平板數字板</strong>
+          <p class="pad-status" id="padStatus">點小空格或答案格後輸入。</p>
+          <div class="pad-grid">
+            <button class="pad-key" type="button" data-key="7">7</button>
+            <button class="pad-key" type="button" data-key="8">8</button>
+            <button class="pad-key" type="button" data-key="9">9</button>
+            <button class="pad-key" type="button" data-key="4">4</button>
+            <button class="pad-key" type="button" data-key="5">5</button>
+            <button class="pad-key" type="button" data-key="6">6</button>
+            <button class="pad-key" type="button" data-key="1">1</button>
+            <button class="pad-key" type="button" data-key="2">2</button>
+            <button class="pad-key" type="button" data-key="3">3</button>
+            <button class="pad-key warn" type="button" data-key="clear">擦掉</button>
+            <button class="pad-key" type="button" data-key="0">0</button>
+            <button class="pad-key command" type="button" data-key="next">左一格</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const placeNames = ["萬", "千", "百", "十", "個"];
+    const state = {
+      digits: 2,
+      problem: null,
+      activeInput: null,
+      touchedAnswers: [],
+      checked: false
+    };
+
+    const elements = {
+      digitButtons: [...document.querySelectorAll("[data-digits]")],
+      paper: document.querySelector("#paper"),
+      problemLine: document.querySelector("#problemLine"),
+      placeRow: document.querySelector("#placeRow"),
+      topNoteRow: document.querySelector("#topNoteRow"),
+      topRow: document.querySelector("#topRow"),
+      bottomRow: document.querySelector("#bottomRow"),
+      answerRow: document.querySelector("#answerRow"),
+      newProblem: document.querySelector("#newProblem"),
+      clearWork: document.querySelector("#clearWork"),
+      checkAnswer: document.querySelector("#checkAnswer"),
+      stepNumber: document.querySelector("#stepNumber"),
+      coachTitle: document.querySelector("#coachTitle"),
+      coachText: document.querySelector("#coachText"),
+      resultBox: document.querySelector("#resultBox"),
+      resultText: document.querySelector("#resultText"),
+      miniSteps: [...document.querySelectorAll("#miniSteps li")],
+      padStatus: document.querySelector("#padStatus"),
+      padKeys: [...document.querySelectorAll("[data-key]")]
+    };
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function toDigits(number, length) {
+      return String(number).padStart(length, "0").split("").map(Number);
+    }
+
+    function fromDigits(digits) {
+      return Number(digits.join(""));
+    }
+
+    function visibleDigits(number, length) {
+      return String(number).padStart(length, " ").split("");
+    }
+
+    function makeTopDigits(length) {
+      const digits = [];
+      for (let index = 0; index < length; index += 1) {
+        if (index === 0) {
+          digits.push(randomInt(2, 9));
+        } else if (index === length - 1) {
+          digits.push(randomInt(0, 9));
+        } else {
+          digits.push(randomInt(1, 9));
+        }
+      }
+      return digits;
+    }
+
+    function computeDetails(topNumber, bottomNumber, length) {
+      const top = toDigits(topNumber, length);
+      const bottom = toDigits(bottomNumber, length);
+      const answer = toDigits(topNumber - bottomNumber, length);
+      const answerText = String(topNumber - bottomNumber).padStart(length, " ").split("");
+      const borrow = Array(length).fill(false);
+      const lent = Array(length).fill(false);
+      const reduced = Array(length).fill("");
+      const complement = Array(length).fill("");
+      const baseTop = Array(length).fill(0);
+      let incoming = 0;
+
+      for (let col = length - 1; col >= 0; col -= 1) {
+        const base = top[col] - incoming;
+        baseTop[col] = base;
+        if (incoming) {
+          lent[col] = true;
+          reduced[col] = String(base);
+        }
+        if (base < bottom[col]) {
+          borrow[col] = true;
+          complement[col] = String(10 - bottom[col]);
+          incoming = 1;
+        } else {
+          incoming = 0;
+        }
+      }
+
+      return { top, bottom, answer, answerText, borrow, lent, reduced, complement, baseTop };
+    }
+
+    function makeProblem() {
+      const length = state.digits;
+      for (let attempt = 0; attempt < 900; attempt += 1) {
+        const topDigits = makeTopDigits(length);
+        const top = fromDigits(topDigits);
+        const bottom = randomInt(1, top - 1);
+        const details = computeDetails(top, bottom, length);
+        const hasBorrow = details.borrow.some(Boolean);
+        const noChainPastLeft = details.baseTop[0] >= details.bottom[0];
+        if (hasBorrow && noChainPastLeft) {
+          return { top, bottom, answer: top - bottom, details };
+        }
+      }
+      return {
+        top: 65,
+        bottom: 27,
+        answer: 38,
+        details: computeDetails(65, 27, 2)
+      };
+    }
+
+    function clearElement(element) {
+      element.replaceChildren();
+    }
+
+    function makeCell(tag, className, text = "") {
+      const element = document.createElement(tag);
+      element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function makeInput(className, col, role, maxLength) {
+      const input = document.createElement("input");
+      input.className = className;
+      input.type = "text";
+      input.inputMode = "none";
+      input.readOnly = true;
+      input.maxLength = maxLength;
+      input.dataset.col = String(col);
+      input.dataset.role = role;
+      input.setAttribute("aria-label", `${currentPlaceNames()[col]}欄${role}`);
+      input.addEventListener("focus", () => setActiveInput(input));
+      input.addEventListener("click", event => {
+        event.stopPropagation();
+        setActiveInput(input);
+      });
+      return input;
+    }
+
+    function currentPlaceNames() {
+      return placeNames.slice(placeNames.length - state.digits);
+    }
+
+    function renderProblem() {
+      const problem = state.problem;
+      const length = state.digits;
+      const place = currentPlaceNames();
+      const topText = visibleDigits(problem.top, length);
+      const bottomText = visibleDigits(problem.bottom, length);
+      elements.paper.style.setProperty("--cols", String(length));
+
+      [
+        elements.problemLine,
+        elements.placeRow,
+        elements.topNoteRow,
+        elements.topRow,
+        elements.bottomRow,
+        elements.answerRow
+      ].forEach(clearElement);
+
+      elements.problemLine.append(makeCell("span", "", String(problem.top)));
+      elements.problemLine.append(document.createTextNode(" - "));
+      elements.problemLine.append(makeCell("span", "", String(problem.bottom)));
+      elements.problemLine.append(document.createTextNode(" = ?"));
+
+      elements.placeRow.append(makeCell("div", "row-label", ""));
+      place.forEach(name => {
+        elements.placeRow.append(makeCell("div", "place", name));
+      });
+
+      elements.topNoteRow.append(makeCell("div", "row-label", "變成"));
+      for (let col = 0; col < length; col += 1) {
+        elements.topNoteRow.append(makeInput("note-input top-note", col, "變成幾", 1));
+      }
+
+      elements.topRow.append(makeCell("div", "operator", ""));
+      for (let col = 0; col < length; col += 1) {
+        const cell = makeCell("button", `number-cell top-digit${topText[col] === " " ? " blank" : ""}`, topText[col] === " " ? "0" : topText[col]);
+        cell.type = "button";
+        cell.dataset.col = String(col);
+        cell.dataset.role = "top";
+        cell.addEventListener("click", () => {
+          if (cell.classList.contains("blank")) return;
+          cell.classList.toggle("slash");
+          clearCheckStyles();
+          updateGuide();
+        });
+        elements.topRow.append(cell);
+      }
+
+      elements.bottomRow.append(makeCell("div", "operator", "-"));
+      for (let col = 0; col < length; col += 1) {
+        const cell = makeCell("button", `number-cell bottom-digit${bottomText[col] === " " ? " blank" : ""}`, bottomText[col] === " " ? "0" : bottomText[col]);
+        cell.type = "button";
+        cell.dataset.col = String(col);
+        cell.dataset.role = "bottom";
+        cell.addEventListener("click", event => {
+          if (event.target.matches("input") || cell.classList.contains("blank")) return;
+          cell.classList.toggle("circle");
+          clearCheckStyles();
+          updateGuide();
+        });
+        cell.append(makeInput("note-input bottom-note", col, "補到10", 1));
+        elements.bottomRow.append(cell);
+      }
+
+      elements.answerRow.append(makeCell("div", "operator", "="));
+      for (let col = 0; col < length; col += 1) {
+        const input = makeInput("answer-input", col, "答案", 1);
+        input.addEventListener("input", () => {
+          if (!state.touchedAnswers.includes(col)) {
+            state.touchedAnswers.push(col);
+          }
+          clearCheckStyles();
+          updateGuide();
+        });
+        elements.answerRow.append(input);
+      }
+
+      state.activeInput = null;
+      state.touchedAnswers = [];
+      state.checked = false;
+      setActiveInput(answerInputs().at(-1));
+      clearCheckStyles();
+      updateGuide();
+    }
+
+    function topNoteInputs() {
+      return [...document.querySelectorAll(".top-note")];
+    }
+
+    function bottomNoteInputs() {
+      return [...document.querySelectorAll(".bottom-note")];
+    }
+
+    function answerInputs() {
+      return [...document.querySelectorAll(".answer-input")];
+    }
+
+    function topCells() {
+      return [...document.querySelectorAll(".top-digit")];
+    }
+
+    function bottomCells() {
+      return [...document.querySelectorAll(".bottom-digit")];
+    }
+
+    function clearCheckStyles() {
+      document.querySelectorAll(".good, .bad, .focus-target").forEach(element => {
+        element.classList.remove("good", "bad", "focus-target");
+      });
+      elements.resultBox.classList.remove("good", "bad");
+      state.checked = false;
+    }
+
+    function setActiveInput(input) {
+      if (!input) return;
+      state.activeInput = input;
+      input.focus({ preventScroll: true });
+      document.querySelectorAll(".note-input, .answer-input").forEach(item => {
+        item.classList.toggle("focus-target", item === input);
+      });
+      const place = currentPlaceNames()[Number(input.dataset.col)];
+      elements.padStatus.textContent = `${place}欄：${input.dataset.role}`;
+    }
+
+    function writeKey(key) {
+      const input = state.activeInput;
+      if (!input) {
+        setActiveInput(answerInputs().at(-1));
+        return;
+      }
+      if (key === "clear") {
+        input.value = "";
+      } else if (key === "next") {
+        const nextCol = Math.max(0, Number(input.dataset.col) - 1);
+        setActiveInput(answerInputs()[nextCol]);
+        return;
+      } else {
+        input.value = key;
+      }
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      if (input.classList.contains("answer-input") && key !== "clear") {
+        const nextCol = Number(input.dataset.col) - 1;
+        if (nextCol >= 0) {
+          setActiveInput(answerInputs()[nextCol]);
+        }
+      } else {
+        setActiveInput(input);
+      }
+    }
+
+    function isAnswerDone(col) {
+      const expected = state.problem.details.answerText[col];
+      if (expected === " ") {
+        return answerInputs()[col].value === "" || answerInputs()[col].value === "0";
+      }
+      return answerInputs()[col].value === expected;
+    }
+
+    function getNextTask() {
+      const details = state.problem.details;
+      const length = state.digits;
+
+      for (let col = length - 1; col >= 0; col -= 1) {
+        if (details.borrow[col]) {
+          const source = col - 1;
+          if (source >= 0) {
+            const sourceReady = topCells()[source].classList.contains("slash") && topNoteInputs()[source].value === details.reduced[source];
+            if (!sourceReady) {
+              return { type: "lend", col, source };
+            }
+          }
+
+          const bottomReady = bottomCells()[col].classList.contains("circle") && bottomNoteInputs()[col].value === details.complement[col];
+          if (!bottomReady) {
+            return { type: "complement", col };
+          }
+        }
+
+        if (!isAnswerDone(col)) {
+          return { type: details.borrow[col] ? "borrowAnswer" : "answer", col };
+        }
+      }
+
+      return { type: "done", col: 0 };
+    }
+
+    function updateGuide() {
+      const task = getNextTask();
+      const details = state.problem.details;
+      const place = currentPlaceNames();
+      document.querySelectorAll(".focus-target").forEach(element => element.classList.remove("focus-target"));
+      elements.miniSteps.forEach((item, index) => {
+        item.classList.remove("active", "done");
+        if (task.type === "done") {
+          item.classList.add("done");
+        } else if (
+          (task.type === "answer" && index === 0) ||
+          (task.type === "lend" && index === 1) ||
+          (task.type === "complement" && index === 2) ||
+          (task.type === "borrowAnswer" && index === 3)
+        ) {
+          item.classList.add("active");
+        }
+      });
+
+      if (task.type === "lend") {
+        elements.stepNumber.textContent = "2";
+        elements.coachTitle.textContent = `向${place[task.source]}位借 1`;
+        elements.coachText.textContent = `點上面被借的數字把它劃掉，再在上方小空格寫 ${details.reduced[task.source]}。`;
+        elements.resultText.textContent = `先劃掉左邊上面的 ${details.top[task.source]}，寫成 ${details.reduced[task.source]}。`;
+        topCells()[task.source].classList.add("focus-target");
+        topNoteInputs()[task.source].classList.add("focus-target");
+        return;
+      }
+
+      if (task.type === "complement") {
+        elements.stepNumber.textContent = "3";
+        elements.coachTitle.textContent = `圈${place[task.col]}位下面的數`;
+        elements.coachText.textContent = `下面是 ${details.bottom[task.col]}，補到 10 是 ${details.complement[task.col]}，把它寫在旁邊。`;
+        elements.resultText.textContent = `點下面的 ${details.bottom[task.col]} 圈起來，旁邊寫 ${details.complement[task.col]}。`;
+        bottomCells()[task.col].classList.add("focus-target");
+        bottomNoteInputs()[task.col].classList.add("focus-target");
+        return;
+      }
+
+      if (task.type === "borrowAnswer") {
+        const base = details.baseTop[task.col];
+        const comp = Number(details.complement[task.col]);
+        elements.stepNumber.textContent = "4";
+        elements.coachTitle.textContent = `寫${place[task.col]}位答案`;
+        elements.coachText.textContent = `${comp} 加上上面的 ${base}，答案是 ${details.answerText[task.col]}。`;
+        elements.resultText.textContent = `在答案格寫 ${details.answerText[task.col]}。`;
+        answerInputs()[task.col].classList.add("focus-target");
+        setActiveInput(answerInputs()[task.col]);
+        return;
+      }
+
+      if (task.type === "answer") {
+        const top = details.baseTop[task.col];
+        const bottom = details.bottom[task.col];
+        elements.stepNumber.textContent = "1";
+        elements.coachTitle.textContent = `算${place[task.col]}位`;
+        elements.coachText.textContent = `${top} 減 ${bottom}，答案寫在下面。`;
+        elements.resultText.textContent = `在${place[task.col]}位答案格寫 ${details.answerText[task.col]}。`;
+        answerInputs()[task.col].classList.add("focus-target");
+        setActiveInput(answerInputs()[task.col]);
+        return;
+      }
+
+      elements.stepNumber.textContent = "好";
+      elements.coachTitle.textContent = "全部完成";
+      elements.coachText.textContent = "可以按檢查看看，也可以換下一題。";
+      elements.resultText.textContent = "做完了，按檢查。";
+      elements.resultBox.classList.add("good");
+    }
+
+    function checkWork() {
+      state.checked = true;
+      clearCheckStyles();
+      let ok = true;
+      const details = state.problem.details;
+
+      answerInputs().forEach((input, col) => {
+        const expected = details.answerText[col];
+        const good = expected === " " ? input.value === "" || input.value === "0" : input.value === expected;
+        input.classList.add(good ? "good" : "bad");
+        if (!good) ok = false;
+      });
+
+      topNoteInputs().forEach((input, col) => {
+        const expected = details.reduced[col];
+        if (expected) {
+          const good = input.value === expected;
+          input.classList.add(good ? "good" : "bad");
+          if (!good) ok = false;
+        } else if (input.value) {
+          input.classList.add("bad");
+          ok = false;
+        }
+      });
+
+      bottomNoteInputs().forEach((input, col) => {
+        const expected = details.complement[col];
+        if (expected) {
+          const good = input.value === expected;
+          input.classList.add(good ? "good" : "bad");
+          if (!good) ok = false;
+        } else if (input.value) {
+          input.classList.add("bad");
+          ok = false;
+        }
+      });
+
+      topCells().forEach((cell, col) => {
+        const good = details.lent[col] ? cell.classList.contains("slash") : !cell.classList.contains("slash");
+        if (details.lent[col] || cell.classList.contains("slash")) {
+          cell.classList.add(good ? "good" : "bad");
+        }
+        if (!good) ok = false;
+      });
+
+      bottomCells().forEach((cell, col) => {
+        const good = details.borrow[col] ? cell.classList.contains("circle") : !cell.classList.contains("circle");
+        if (details.borrow[col] || cell.classList.contains("circle")) {
+          cell.classList.add(good ? "good" : "bad");
+        }
+        if (!good) ok = false;
+      });
+
+      const orderOk = state.touchedAnswers.length === 0 || state.touchedAnswers[0] === state.digits - 1;
+      if (!orderOk) ok = false;
+
+      elements.resultBox.classList.toggle("good", ok);
+      elements.resultBox.classList.toggle("bad", !ok);
+      elements.resultText.textContent = ok
+        ? `完成。${state.problem.top} - ${state.problem.bottom} = ${state.problem.answer}。`
+        : "看紅色的地方，再修一次。記得從個位開始。";
+    }
+
+    function clearWork() {
+      document.querySelectorAll("input").forEach(input => {
+        input.value = "";
+      });
+      topCells().forEach(cell => cell.classList.remove("slash"));
+      bottomCells().forEach(cell => cell.classList.remove("circle"));
+      state.touchedAnswers = [];
+      clearCheckStyles();
+      setActiveInput(answerInputs().at(-1));
+      updateGuide();
+    }
+
+    function resetProblem() {
+      state.problem = makeProblem();
+      renderProblem();
+    }
+
+    elements.digitButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        state.digits = Number(button.dataset.digits);
+        elements.digitButtons.forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+        resetProblem();
+      });
+    });
+
+    elements.newProblem.addEventListener("click", resetProblem);
+    elements.clearWork.addEventListener("click", clearWork);
+    elements.checkAnswer.addEventListener("click", checkWork);
+    elements.padKeys.forEach(button => {
+      button.addEventListener("click", () => writeKey(button.dataset.key));
+    });
+
+    window.borrowPractice = {
+      state,
+      resetProblem,
+      clearWork,
+      answerInputs,
+      topNoteInputs,
+      bottomNoteInputs,
+      topCells,
+      bottomCells
+    };
+
+    resetProblem();
+  </script>
+</body>
+</html>

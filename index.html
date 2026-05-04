@@ -159,6 +159,122 @@
       background: var(--coral);
     }
 
+    .help-panel {
+      margin: 0 0 14px;
+      padding: 16px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .help-panel[hidden] {
+      display: none;
+    }
+
+    .help-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .help-head h2 {
+      margin: 0 0 4px;
+      font-size: 1.28rem;
+      line-height: 1.2;
+    }
+
+    .help-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .help-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .help-card {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #fbfdfc;
+    }
+
+    .help-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.02rem;
+    }
+
+    .help-card ol,
+    .help-card ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .help-card li + li {
+      margin-top: 4px;
+    }
+
+    .sample-row {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .sample-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .sample-box,
+    .sample-digit {
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      border: 2px solid var(--soft);
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+
+    .sample-digit {
+      position: relative;
+      font-size: 1.15rem;
+    }
+
+    .sample-digit.slash::after {
+      content: "";
+      position: absolute;
+      width: 70%;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--coral);
+      transform: rotate(-17deg);
+    }
+
+    .sample-digit.circle::before {
+      content: "";
+      position: absolute;
+      width: 72%;
+      height: 72%;
+      border: 3px solid var(--blue);
+      border-radius: 999px;
+    }
+
     .practice {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 306px;
@@ -542,6 +658,14 @@
         justify-content: stretch;
       }
 
+      .help-head {
+        flex-direction: column;
+      }
+
+      .help-grid {
+        grid-template-columns: 1fr;
+      }
+
       .digits {
         flex: 1;
         grid-template-columns: repeat(4, 1fr);
@@ -615,9 +739,55 @@
           <button type="button" data-digits="5" aria-pressed="false">5</button>
         </div>
         <button class="action" type="button" id="newProblem">新題目</button>
+        <button class="action" type="button" id="helpToggle" aria-expanded="false" aria-controls="helpPanel">使用說明</button>
         <button class="action primary" type="button" id="checkAnswer">檢查</button>
       </div>
     </header>
+
+    <section class="help-panel" id="helpPanel" aria-label="使用說明" hidden>
+      <div class="help-head">
+        <div>
+          <h2>使用說明</h2>
+          <p>這個練習板是給平板使用的。小朋友只要照著上方提示，一次做一件事。</p>
+        </div>
+        <button class="action" type="button" id="helpClose">收起說明</button>
+      </div>
+
+      <div class="help-grid">
+        <article class="help-card">
+          <h3>小朋友怎麼做</h3>
+          <ol>
+            <li>先看最右邊的個位。</li>
+            <li>如果上面的數不夠減，就點左邊上面的數字，把它劃掉。</li>
+            <li>點上方小空格，用數字板寫「少 1 之後的數字」。</li>
+            <li>點下面的數字，把它圈起來。</li>
+            <li>點旁邊小空格，寫「補到 10 還差幾」。</li>
+            <li>點答案格，用平板數字板寫答案，再繼續往左算。</li>
+          </ol>
+        </article>
+
+        <article class="help-card">
+          <h3>畫面上的記號</h3>
+          <div class="sample-row">
+            <div class="sample-mark"><span class="sample-digit slash">6</span>上面的數字借出 1，要劃掉。</div>
+            <div class="sample-mark"><span class="sample-box">5</span>上方小格寫借出後變成幾。</div>
+            <div class="sample-mark"><span class="sample-digit circle">7</span>下面的數字要補到 10，所以圈起來。</div>
+            <div class="sample-mark"><span class="sample-box">3</span>旁邊小格寫補到 10 的數字。</div>
+          </div>
+        </article>
+
+        <article class="help-card">
+          <h3>家長或老師可以注意</h3>
+          <ul>
+            <li>先讓孩子照提示完成，不急著算快。</li>
+            <li>孩子不懂時，可以問：「這一欄夠不夠減？」</li>
+            <li>按「檢查」後，綠色代表正確，紅色代表需要再看一次。</li>
+            <li>答案前面的 0 可以留白，和紙筆直式一樣。</li>
+            <li>題目太難時，先選 2 位數，熟了再選 3 到 5 位數。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
 
     <section class="practice">
       <section class="stage" aria-label="借位減法操作區">
@@ -698,6 +868,9 @@
       bottomRow: document.querySelector("#bottomRow"),
       answerRow: document.querySelector("#answerRow"),
       newProblem: document.querySelector("#newProblem"),
+      helpToggle: document.querySelector("#helpToggle"),
+      helpClose: document.querySelector("#helpClose"),
+      helpPanel: document.querySelector("#helpPanel"),
       clearWork: document.querySelector("#clearWork"),
       checkAnswer: document.querySelector("#checkAnswer"),
       stepNumber: document.querySelector("#stepNumber"),
@@ -1169,6 +1342,18 @@
     });
 
     elements.newProblem.addEventListener("click", resetProblem);
+    elements.helpToggle.addEventListener("click", () => {
+      const isOpening = elements.helpPanel.hidden;
+      elements.helpPanel.hidden = !isOpening;
+      elements.helpToggle.setAttribute("aria-expanded", String(isOpening));
+      elements.helpToggle.textContent = isOpening ? "收起說明" : "使用說明";
+    });
+    elements.helpClose.addEventListener("click", () => {
+      elements.helpPanel.hidden = true;
+      elements.helpToggle.setAttribute("aria-expanded", "false");
+      elements.helpToggle.textContent = "使用說明";
+      elements.helpToggle.focus();
+    });
     elements.clearWork.addEventListener("click", clearWork);
     elements.checkAnswer.addEventListener("click", checkWork);
     elements.padKeys.forEach(button => {

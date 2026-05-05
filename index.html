@@ -1141,6 +1141,7 @@
         elements.bottomRow,
         elements.answerRow
       ].forEach(clearElement);
+      clearGroupMarks();
 
       elements.problemLine.append(makeCell("span", "", String(problem.top)));
       elements.problemLine.append(document.createTextNode(" - "));
@@ -1235,14 +1236,18 @@
       return [...document.querySelectorAll(".bottom-note")];
     }
 
-    function updateAddGroups() {
-      const details = state.problem?.details;
-      if (!details) return;
+    function clearGroupMarks() {
       document.querySelectorAll(".group-ring").forEach(element => element.remove());
       document.querySelectorAll(".paper .add-group").forEach(element => {
         element.classList.remove("add-group");
         element.style.removeProperty("--group-color");
       });
+    }
+
+    function updateAddGroups() {
+      const details = state.problem?.details;
+      if (!details) return;
+      clearGroupMarks();
       bottomNoteInputs().forEach(input => {
         const col = Number(input.dataset.col);
         const active = Boolean(details.borrow[col] && input.value.trim());

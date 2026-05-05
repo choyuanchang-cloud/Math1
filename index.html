@@ -117,12 +117,20 @@
 
     .digits {
       display: grid;
-      grid-template-columns: repeat(4, 48px);
+      grid-template-columns: auto repeat(4, 48px);
+      align-items: center;
       gap: 6px;
       padding: 5px;
       border: 1px solid var(--soft);
       border-radius: var(--radius);
       background: #f7faf8;
+    }
+
+    .digits-label {
+      padding: 0 8px;
+      color: var(--muted);
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .digits button,
@@ -153,10 +161,42 @@
       background: #ffffff;
     }
 
+    .action.icon-only {
+      width: 56px;
+      padding: 0;
+    }
+
+    .action.icon-only svg {
+      width: 25px;
+      height: 25px;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .action.help-icon {
+      width: 58px;
+      padding: 0;
+      color: #ffffff;
+      border-color: var(--blue);
+      background: var(--blue);
+      font-size: 1.55rem;
+      font-weight: 950;
+      line-height: 1;
+    }
+
     .action.primary {
       color: #ffffff;
       border-color: var(--coral);
       background: var(--coral);
+    }
+
+    .action.blue {
+      color: #ffffff;
+      border-color: var(--blue);
+      background: var(--blue);
     }
 
     .help-panel {
@@ -279,7 +319,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) 306px;
       gap: 14px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .stage,
@@ -288,6 +328,7 @@
       border-radius: var(--radius);
       background: #ffffff;
       box-shadow: var(--shadow);
+      height: 100%;
     }
 
     .stage {
@@ -296,7 +337,7 @@
 
     .coach {
       display: grid;
-      grid-template-columns: 46px 1fr auto;
+      grid-template-columns: 46px minmax(0, 1fr) auto auto;
       gap: 12px;
       align-items: center;
       padding: 14px;
@@ -326,6 +367,13 @@
       margin: 0;
       color: var(--muted);
       line-height: 1.45;
+    }
+
+    .coach-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .paper-wrap {
@@ -412,6 +460,12 @@
       font-weight: 950;
     }
 
+    .note-placeholder {
+      width: 62px;
+      height: 44px;
+      justify-self: center;
+    }
+
     .note-input.bottom-note {
       position: absolute;
       top: 7px;
@@ -479,9 +533,10 @@
     .operator {
       display: grid;
       place-items: center;
-      color: #ffffff;
-      background: var(--teal);
-      font-size: 2.05rem;
+      color: var(--teal);
+      background: transparent;
+      font-size: 2.8rem;
+      line-height: 1;
     }
 
     .rule {
@@ -533,6 +588,7 @@
       position: sticky;
       top: 12px;
       padding: 14px;
+      align-self: stretch;
     }
 
     .result {
@@ -552,6 +608,27 @@
     .result.bad {
       border-color: #f2a69e;
       background: var(--wrong);
+    }
+
+    .stats-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: #fbfdfc;
+    }
+
+    .stats-number {
+      margin: 0;
+      font-size: 1.55rem;
+      font-weight: 950;
+    }
+
+    .stats-number span {
+      color: var(--teal);
     }
 
     .result strong,
@@ -668,18 +745,27 @@
 
       .digits {
         flex: 1;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: auto repeat(4, 1fr);
       }
 
       .practice {
         grid-template-columns: 1fr;
       }
 
+      .stage,
+      .side {
+        height: auto;
+      }
+
       .coach {
         grid-template-columns: 42px 1fr;
       }
 
-      .coach .action {
+      .coach .stats-card {
+        grid-column: 1 / -1;
+      }
+
+      .coach-actions {
         grid-column: 1 / -1;
       }
 
@@ -714,9 +800,12 @@
       }
 
       .number-cell,
-      .operator,
       .answer-input {
         font-size: 1.9rem;
+      }
+
+      .operator {
+        font-size: 2.55rem;
       }
     }
   </style>
@@ -733,14 +822,13 @@
       </div>
       <div class="controls" aria-label="練習設定">
         <div class="digits" role="group" aria-label="選擇位數">
+          <span class="digits-label">位數</span>
           <button type="button" data-digits="2" aria-pressed="true">2</button>
           <button type="button" data-digits="3" aria-pressed="false">3</button>
           <button type="button" data-digits="4" aria-pressed="false">4</button>
           <button type="button" data-digits="5" aria-pressed="false">5</button>
         </div>
-        <button class="action" type="button" id="newProblem">新題目</button>
-        <button class="action" type="button" id="helpToggle" aria-expanded="false" aria-controls="helpPanel">使用說明</button>
-        <button class="action primary" type="button" id="checkAnswer">檢查</button>
+        <button class="action help-icon" type="button" id="helpToggle" aria-expanded="false" aria-controls="helpPanel" aria-label="使用說明" title="使用說明">?</button>
       </div>
     </header>
 
@@ -758,11 +846,13 @@
           <h3>小朋友怎麼做</h3>
           <ol>
             <li>先看最右邊的個位。</li>
-            <li>如果上面的數不夠減，就點左邊上面的數字，把它劃掉。</li>
-            <li>點上方小空格，用數字板寫「少 1 之後的數字」。</li>
-            <li>點下面的數字，把它圈起來。</li>
-            <li>點旁邊小空格，寫「補到 10 還差幾」。</li>
+            <li>如果上面的數不夠減，就向左邊借 1：點左邊上面的數字，把它劃掉。</li>
+            <li>在被借走的那一欄上方小格，寫「少 1 之後的數字」。</li>
+            <li>個位上方沒有「變成」小格，這是正常的。</li>
+            <li>點這一欄下面的數字，把它圈起來。</li>
+            <li>點下面數字旁邊的小格，寫「補到 10 還差幾」。</li>
             <li>點答案格，用平板數字板寫答案，再繼續往左算。</li>
+            <li>做完按紅色「檢查」；換題按藍色「新題目」；要清空這題按橡皮擦圖示。</li>
           </ol>
         </article>
 
@@ -770,7 +860,7 @@
           <h3>畫面上的記號</h3>
           <div class="sample-row">
             <div class="sample-mark"><span class="sample-digit slash">6</span>上面的數字借出 1，要劃掉。</div>
-            <div class="sample-mark"><span class="sample-box">5</span>上方小格寫借出後變成幾。</div>
+            <div class="sample-mark"><span class="sample-box">5</span>上方小格只出現在會借出的位值，寫借出後變成幾。</div>
             <div class="sample-mark"><span class="sample-digit circle">7</span>下面的數字要補到 10，所以圈起來。</div>
             <div class="sample-mark"><span class="sample-box">3</span>旁邊小格寫補到 10 的數字。</div>
           </div>
@@ -782,6 +872,8 @@
             <li>先讓孩子照提示完成，不急著算快。</li>
             <li>孩子不懂時，可以問：「這一欄夠不夠減？」</li>
             <li>按「檢查」後，綠色代表正確，紅色代表需要再看一次。</li>
+            <li>完成題數會在第一次檢查通過時加 1；同一題重複檢查不會一直加。</li>
+            <li>按「重置」只會清完成題數，不會換掉現在這題。</li>
             <li>答案前面的 0 可以留白，和紙筆直式一樣。</li>
             <li>題目太難時，先選 2 位數，熟了再選 3 到 5 位數。</li>
           </ul>
@@ -797,7 +889,23 @@
             <p class="coach-title" id="coachTitle">先看個位</p>
             <p class="coach-text" id="coachText">如果上面的數不夠減，就向左邊借 1。</p>
           </div>
-          <button class="action" type="button" id="clearWork">擦掉重做</button>
+          <div class="stats-card" aria-label="完成題數統計">
+            <div>
+              <p class="stats-number">完成 <span id="completedCount">0</span> 題</p>
+            </div>
+            <button class="action" type="button" id="resetStats">重置</button>
+          </div>
+          <div class="coach-actions" aria-label="題目操作">
+            <button class="action icon-only" type="button" id="clearWork" aria-label="擦掉重做" title="擦掉重做">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m7 21-4.3-4.3c-0.9-0.9-0.9-2.4 0-3.3L13.4 2.7c0.9-0.9 2.4-0.9 3.3 0l4.6 4.6c0.9 0.9 0.9 2.4 0 3.3L13 19" />
+                <path d="M22 21H7" />
+                <path d="m5 11 9 9" />
+              </svg>
+            </button>
+            <button class="action blue" type="button" id="newProblem">新題目</button>
+            <button class="action primary" type="button" id="checkAnswer">檢查</button>
+          </div>
         </div>
 
         <div class="paper-wrap">
@@ -855,7 +963,9 @@
       problem: null,
       activeInput: null,
       touchedAnswers: [],
-      checked: false
+      checked: false,
+      completedCount: 0,
+      problemCounted: false
     };
 
     const elements = {
@@ -878,6 +988,8 @@
       coachText: document.querySelector("#coachText"),
       resultBox: document.querySelector("#resultBox"),
       resultText: document.querySelector("#resultText"),
+      completedCount: document.querySelector("#completedCount"),
+      resetStats: document.querySelector("#resetStats"),
       miniSteps: [...document.querySelectorAll("#miniSteps li")],
       padStatus: document.querySelector("#padStatus"),
       padKeys: [...document.querySelectorAll("[data-key]")]
@@ -1027,7 +1139,11 @@
 
       elements.topNoteRow.append(makeCell("div", "row-label", "變成"));
       for (let col = 0; col < length; col += 1) {
-        elements.topNoteRow.append(makeInput("note-input top-note", col, "變成幾", 1));
+        if (col === length - 1) {
+          elements.topNoteRow.append(makeCell("div", "note-placeholder", ""));
+        } else {
+          elements.topNoteRow.append(makeInput("note-input top-note", col, "變成幾", 1));
+        }
       }
 
       elements.topRow.append(makeCell("div", "operator", ""));
@@ -1045,7 +1161,7 @@
         elements.topRow.append(cell);
       }
 
-      elements.bottomRow.append(makeCell("div", "operator", "-"));
+      elements.bottomRow.append(makeCell("div", "operator", "−"));
       for (let col = 0; col < length; col += 1) {
         const cell = makeCell("button", `number-cell bottom-digit${bottomText[col] === " " ? " blank" : ""}`, bottomText[col] === " " ? "0" : bottomText[col]);
         cell.type = "button";
@@ -1084,6 +1200,10 @@
 
     function topNoteInputs() {
       return [...document.querySelectorAll(".top-note")];
+    }
+
+    function topNoteInput(col) {
+      return document.querySelector(`.top-note[data-col="${col}"]`);
     }
 
     function bottomNoteInputs() {
@@ -1163,7 +1283,7 @@
         if (details.borrow[col]) {
           const source = col - 1;
           if (source >= 0) {
-            const sourceReady = topCells()[source].classList.contains("slash") && topNoteInputs()[source].value === details.reduced[source];
+            const sourceReady = topCells()[source].classList.contains("slash") && topNoteInput(source)?.value === details.reduced[source];
             if (!sourceReady) {
               return { type: "lend", col, source };
             }
@@ -1208,7 +1328,7 @@
         elements.coachText.textContent = `點上面被借的數字把它劃掉，再在上方小空格寫 ${details.reduced[task.source]}。`;
         elements.resultText.textContent = `先劃掉左邊上面的 ${details.top[task.source]}，寫成 ${details.reduced[task.source]}。`;
         topCells()[task.source].classList.add("focus-target");
-        topNoteInputs()[task.source].classList.add("focus-target");
+        topNoteInput(task.source)?.classList.add("focus-target");
         return;
       }
 
@@ -1266,7 +1386,8 @@
         if (!good) ok = false;
       });
 
-      topNoteInputs().forEach((input, col) => {
+      topNoteInputs().forEach(input => {
+        const col = Number(input.dataset.col);
         const expected = details.reduced[col];
         if (expected) {
           const good = input.value === expected;
@@ -1309,6 +1430,12 @@
       const orderOk = state.touchedAnswers.length === 0 || state.touchedAnswers[0] === state.digits - 1;
       if (!orderOk) ok = false;
 
+      if (ok && !state.problemCounted) {
+        state.completedCount += 1;
+        state.problemCounted = true;
+        updateStats();
+      }
+
       elements.resultBox.classList.toggle("good", ok);
       elements.resultBox.classList.toggle("bad", !ok);
       elements.resultText.textContent = ok
@@ -1330,7 +1457,17 @@
 
     function resetProblem() {
       state.problem = makeProblem();
+      state.problemCounted = false;
       renderProblem();
+    }
+
+    function updateStats() {
+      elements.completedCount.textContent = String(state.completedCount);
+    }
+
+    function resetStats() {
+      state.completedCount = 0;
+      updateStats();
     }
 
     elements.digitButtons.forEach(button => {
@@ -1342,16 +1479,15 @@
     });
 
     elements.newProblem.addEventListener("click", resetProblem);
+    elements.resetStats.addEventListener("click", resetStats);
     elements.helpToggle.addEventListener("click", () => {
       const isOpening = elements.helpPanel.hidden;
       elements.helpPanel.hidden = !isOpening;
       elements.helpToggle.setAttribute("aria-expanded", String(isOpening));
-      elements.helpToggle.textContent = isOpening ? "收起說明" : "使用說明";
     });
     elements.helpClose.addEventListener("click", () => {
       elements.helpPanel.hidden = true;
       elements.helpToggle.setAttribute("aria-expanded", "false");
-      elements.helpToggle.textContent = "使用說明";
       elements.helpToggle.focus();
     });
     elements.clearWork.addEventListener("click", clearWork);

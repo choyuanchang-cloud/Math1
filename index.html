@@ -306,13 +306,17 @@
       transform: rotate(-17deg);
     }
 
-    .sample-digit.circle::before {
-      content: "";
-      position: absolute;
-      width: 72%;
-      height: 72%;
+    .sample-pair {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
       border: 3px solid var(--blue);
       border-radius: 999px;
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 950;
+      flex: 0 0 auto;
     }
 
     .practice {
@@ -383,6 +387,7 @@
     }
 
     .paper {
+      position: relative;
       width: max-content;
       min-width: calc(var(--sign) + var(--cols) * var(--digit) + (var(--cols) + 1) * 8px + 42px);
       margin: 0 auto;
@@ -468,8 +473,8 @@
 
     .note-input.bottom-note {
       position: absolute;
-      top: 7px;
-      right: -16px;
+      top: -22px;
+      right: -14px;
       z-index: 2;
       width: 44px;
       height: 42px;
@@ -521,13 +526,22 @@
       transform: rotate(-17deg);
     }
 
-    .number-cell.circle::before {
-      content: "";
+    .number-cell.add-group,
+    .note-input.add-group {
+      border-color: var(--group-color, var(--blue));
+    }
+
+    .group-ring {
       position: absolute;
-      width: 72%;
-      height: 72%;
-      border: 4px solid var(--blue);
-      border-radius: 999px;
+      border: 4px solid var(--group-color, var(--blue));
+      border-radius: 50%;
+      background: transparent;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .bottom-note.add-group {
+      z-index: 4;
     }
 
     .operator {
@@ -817,7 +831,7 @@
         <div class="mark" aria-hidden="true">借</div>
         <div>
           <h1>借位減法練習板</h1>
-          <p>像影片一樣：劃掉、圈起來、在旁邊寫小數字。</p>
+          <p>像影片一樣：劃掉、寫補數、把相加的一組圈起來。</p>
         </div>
       </div>
       <div class="controls" aria-label="練習設定">
@@ -849,8 +863,8 @@
             <li>如果上面的數不夠減，就向左邊借 1：點左邊上面的數字，把它劃掉。</li>
             <li>在被借走的那一欄上方小格，寫「少 1 之後的數字」。</li>
             <li>個位上方沒有「變成」小格，這是正常的。</li>
-            <li>點這一欄下面的數字，把它圈起來。</li>
             <li>點下面數字旁邊的小格，寫「補到 10 還差幾」。</li>
+            <li>寫好後，同一個位值會用同色大圈圈起來；有效的上方數字和補數要一起看。</li>
             <li>點答案格，用平板數字板寫答案，再繼續往左算。</li>
             <li>做完按紅色「檢查」；換題按藍色「新題目」；要清空這題按橡皮擦圖示。</li>
           </ol>
@@ -861,8 +875,9 @@
           <div class="sample-row">
             <div class="sample-mark"><span class="sample-digit slash">6</span>上面的數字借出 1，要劃掉。</div>
             <div class="sample-mark"><span class="sample-box">5</span>上方小格只出現在會借出的位值，寫借出後變成幾。</div>
-            <div class="sample-mark"><span class="sample-digit circle">7</span>下面的數字要補到 10，所以圈起來。</div>
             <div class="sample-mark"><span class="sample-box">3</span>旁邊小格寫補到 10 的數字。</div>
+            <div class="sample-mark"><span class="sample-pair"><span>7</span><span>3</span></span>同一個位值會用同色大圈圈起來，表示要一起看。</div>
+            <div class="sample-mark"><span class="sample-pair"><span>6</span><span>2</span></span>如果上方數字已經變成 6，就看上方小格的 6，不看被劃掉的原數字。</div>
           </div>
         </article>
 
@@ -930,7 +945,7 @@
         <ul class="mini-steps" id="miniSteps">
           <li><span>1</span>看這一欄夠不夠減</li>
           <li><span>2</span>不夠就劃左邊、寫少 1</li>
-          <li><span>3</span>圈下面、寫補到 10</li>
+          <li><span>3</span>寫補數、圈一組</li>
           <li><span>4</span>寫答案</li>
         </ul>
 
@@ -1142,7 +1157,13 @@
         if (col === length - 1) {
           elements.topNoteRow.append(makeCell("div", "note-placeholder", ""));
         } else {
-          elements.topNoteRow.append(makeInput("note-input top-note", col, "變成幾", 1));
+          const input = makeInput("note-input top-note", col, "變成幾", 1);
+          input.addEventListener("input", () => {
+            clearCheckStyles();
+            updateAddGroups();
+            updateGuide();
+          });
+          elements.topNoteRow.append(input);
         }
       }
 
@@ -1169,11 +1190,15 @@
         cell.dataset.role = "bottom";
         cell.addEventListener("click", event => {
           if (event.target.matches("input") || cell.classList.contains("blank")) return;
-          cell.classList.toggle("circle");
+          setActiveInput(cell.querySelector(".bottom-note"));
+        });
+        const note = makeInput("note-input bottom-note", col, "補到10", 1);
+        note.addEventListener("input", () => {
           clearCheckStyles();
+          updateAddGroups();
           updateGuide();
         });
-        cell.append(makeInput("note-input bottom-note", col, "補到10", 1));
+        cell.append(note);
         elements.bottomRow.append(cell);
       }
 
@@ -1208,6 +1233,89 @@
 
     function bottomNoteInputs() {
       return [...document.querySelectorAll(".bottom-note")];
+    }
+
+    function updateAddGroups() {
+      const details = state.problem?.details;
+      if (!details) return;
+      document.querySelectorAll(".group-ring").forEach(element => element.remove());
+      document.querySelectorAll(".paper .add-group").forEach(element => {
+        element.classList.remove("add-group");
+        element.style.removeProperty("--group-color");
+      });
+      bottomNoteInputs().forEach(input => {
+        const col = Number(input.dataset.col);
+        const active = Boolean(details.borrow[col] && input.value.trim());
+        if (!active) return;
+
+        const reducedInput = topNoteInput(col);
+        const useReduced = Boolean(details.lent[col] && reducedInput?.value.trim());
+        const target = useReduced ? reducedInput : topCells()[col];
+        if (!target) return;
+        const color = groupColorForCol(col);
+
+        input.classList.add("add-group");
+        target.classList.add("add-group");
+        input.style.setProperty("--group-color", color);
+        target.style.setProperty("--group-color", color);
+        drawColumnGroupRing(col, target, input, color);
+      });
+    }
+
+    function groupColorForCol(col) {
+      const colorsByPlace = [
+        "#3f4fc8",
+        "#22984f",
+        "#d57921",
+        "#8a55c7",
+        "#008a95"
+      ];
+      const placeFromRight = state.digits - 1 - col;
+      return colorsByPlace[placeFromRight % colorsByPlace.length];
+    }
+
+    function rectInsidePaper(element) {
+      const paperRect = elements.paper.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
+      return {
+        left: rect.left - paperRect.left - elements.paper.clientLeft,
+        top: rect.top - paperRect.top - elements.paper.clientTop,
+        right: rect.right - paperRect.left - elements.paper.clientLeft,
+        bottom: rect.bottom - paperRect.top - elements.paper.clientTop,
+        width: rect.width,
+        height: rect.height
+      };
+    }
+
+    function drawColumnGroupRing(col, target, input, color) {
+      const column = rectInsidePaper(topCells()[col] || target);
+      const targetRect = rectInsidePaper(target);
+      const inputRect = rectInsidePaper(input);
+      const minTop = Math.min(targetRect.top, inputRect.top);
+      const maxBottom = Math.max(targetRect.bottom, inputRect.bottom);
+      const minLeft = Math.min(targetRect.left, inputRect.left, column.left + 8);
+      const maxRight = Math.max(targetRect.right, inputRect.right, column.right - 8);
+      const centerX = (minLeft + maxRight) / 2;
+      const width = Math.min(Math.max(maxRight - minLeft + 14, 84), column.width + 4);
+      const safeCenterX = Math.min(
+        Math.max(centerX, column.left + width / 2 - 4),
+        column.right + 14 - width / 2
+      );
+      const height = Math.max(maxBottom - minTop + 22, 132);
+      const left = safeCenterX - width / 2;
+      const top = minTop - 11;
+      drawRing(left, top, width, height, color);
+    }
+
+    function drawRing(left, top, width, height, color) {
+      const ring = document.createElement("div");
+      ring.className = "group-ring";
+      ring.style.left = `${left}px`;
+      ring.style.top = `${top}px`;
+      ring.style.width = `${width}px`;
+      ring.style.height = `${height}px`;
+      ring.style.setProperty("--group-color", color);
+      elements.paper.append(ring);
     }
 
     function answerInputs() {
@@ -1262,7 +1370,7 @@
         if (nextCol >= 0) {
           setActiveInput(answerInputs()[nextCol]);
         }
-      } else {
+      } else if (key === "clear") {
         setActiveInput(input);
       }
     }
@@ -1289,7 +1397,7 @@
             }
           }
 
-          const bottomReady = bottomCells()[col].classList.contains("circle") && bottomNoteInputs()[col].value === details.complement[col];
+          const bottomReady = bottomNoteInputs()[col].value === details.complement[col];
           if (!bottomReady) {
             return { type: "complement", col };
           }
@@ -1334,11 +1442,12 @@
 
       if (task.type === "complement") {
         elements.stepNumber.textContent = "3";
-        elements.coachTitle.textContent = `圈${place[task.col]}位下面的數`;
-        elements.coachText.textContent = `下面是 ${details.bottom[task.col]}，補到 10 是 ${details.complement[task.col]}，把它寫在旁邊。`;
-        elements.resultText.textContent = `點下面的 ${details.bottom[task.col]} 圈起來，旁邊寫 ${details.complement[task.col]}。`;
-        bottomCells()[task.col].classList.add("focus-target");
+        elements.coachTitle.textContent = `寫${place[task.col]}位的補數`;
+        elements.coachText.textContent = `下面是 ${details.bottom[task.col]}，補到 10 是 ${details.complement[task.col]}。寫好後，${details.baseTop[task.col]} 和 ${details.complement[task.col]} 會圈成一組相加。`;
+        elements.resultText.textContent = `在下面數字旁邊寫 ${details.complement[task.col]}，再看它和上面的 ${details.baseTop[task.col]}。`;
+        topCells()[task.col].classList.add("focus-target");
         bottomNoteInputs()[task.col].classList.add("focus-target");
+        setActiveInput(bottomNoteInputs()[task.col]);
         return;
       }
 
@@ -1419,14 +1528,6 @@
         if (!good) ok = false;
       });
 
-      bottomCells().forEach((cell, col) => {
-        const good = details.borrow[col] ? cell.classList.contains("circle") : !cell.classList.contains("circle");
-        if (details.borrow[col] || cell.classList.contains("circle")) {
-          cell.classList.add(good ? "good" : "bad");
-        }
-        if (!good) ok = false;
-      });
-
       const orderOk = state.touchedAnswers.length === 0 || state.touchedAnswers[0] === state.digits - 1;
       if (!orderOk) ok = false;
 
@@ -1448,9 +1549,11 @@
         input.value = "";
       });
       topCells().forEach(cell => cell.classList.remove("slash"));
-      bottomCells().forEach(cell => cell.classList.remove("circle"));
+      topCells().forEach(cell => cell.classList.remove("add-group"));
+      bottomNoteInputs().forEach(input => input.classList.remove("add-group"));
       state.touchedAnswers = [];
       clearCheckStyles();
+      updateAddGroups();
       setActiveInput(answerInputs().at(-1));
       updateGuide();
     }
@@ -1495,6 +1598,7 @@
     elements.padKeys.forEach(button => {
       button.addEventListener("click", () => writeKey(button.dataset.key));
     });
+    window.addEventListener("resize", updateAddGroups);
 
     window.borrowPractice = {
       state,

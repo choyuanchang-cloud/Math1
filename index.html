@@ -1006,6 +1006,10 @@
       list-style: none;
     }
 
+    .mini-steps[hidden] {
+      display: none;
+    }
+
     .mini-steps li {
       display: grid;
       grid-template-columns: 28px 1fr;
@@ -2902,6 +2906,14 @@
     }
 
     function renderMiniSteps() {
+      if (state.mode === "multiply") {
+        elements.miniStepsList.hidden = true;
+        elements.miniStepsList.replaceChildren();
+        elements.miniSteps = [];
+        return;
+      }
+
+      elements.miniStepsList.hidden = false;
       const longPlaces = [...currentPlaceNames()].reverse();
       const longSteps = [
         "題目排整齊",
@@ -2910,8 +2922,6 @@
       ];
       const steps = state.mode === "longMultiply"
         ? longSteps
-        : state.mode === "multiply"
-        ? ["選一排來背", "看測驗題", "輸入答案", "檢查得分"]
         : state.mode === "add"
           ? ["算這一欄加起來", "有進位就寫上方 1", "寫答案、往左做", "完成後檢查"]
           : ["看這一欄夠不夠減", "不夠就劃左邊、寫少 1", "寫補數、圈一組", "寫答案"];

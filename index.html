@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>借位減法練習板</title>
+  <title>直式運算練習板</title>
   <style>
     :root {
       color-scheme: light;
@@ -75,11 +75,10 @@
       box-shadow: var(--shadow);
     }
 
-    .title {
+    .mode-switch {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
+      gap: 8px;
     }
 
     .mark {
@@ -95,16 +94,24 @@
       flex: 0 0 auto;
     }
 
-    h1 {
-      margin: 0 0 4px;
-      font-size: 1.55rem;
-      line-height: 1.15;
+    .mode-button {
+      border: 3px solid transparent;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
     }
 
-    .title p {
-      margin: 0;
+    .mode-button[aria-pressed="false"] {
       color: var(--muted);
-      line-height: 1.4;
+      border-color: var(--soft);
+      background: #ffffff;
+    }
+
+    .mode-button[aria-pressed="true"] {
+      box-shadow: 0 0 0 4px rgba(8, 127, 140, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .mode-button.add-mode[aria-pressed="true"] {
+      background: conic-gradient(from 180deg, #f2c14e, #219b6d, #356ac3, #f2c14e);
     }
 
     .controls {
@@ -482,6 +489,11 @@
       background: #fffef7;
     }
 
+    .note-input.carry-note {
+      color: var(--teal);
+      background: #f7fffb;
+    }
+
     .note-input:focus,
     .answer-input:focus {
       border-color: var(--teal);
@@ -745,7 +757,8 @@
         flex-direction: column;
       }
 
-      .controls {
+      .controls,
+      .mode-switch {
         justify-content: stretch;
       }
 
@@ -827,12 +840,9 @@
 <body>
   <main class="app">
     <header class="top">
-      <div class="title">
-        <div class="mark" aria-hidden="true">借</div>
-        <div>
-          <h1>借位減法練習板</h1>
-          <p>像影片一樣：劃掉、寫補數、把相加的一組圈起來。</p>
-        </div>
+      <div class="mode-switch" aria-label="選擇練習頁面">
+        <button class="mark mode-button" type="button" data-mode="subtract" aria-pressed="true" aria-label="借位減法" title="借位減法">減</button>
+        <button class="mark mode-button add-mode" type="button" data-mode="add" aria-pressed="false" aria-label="進位加法" title="進位加法">加</button>
       </div>
       <div class="controls" aria-label="練習設定">
         <div class="digits" role="group" aria-label="選擇位數">
@@ -849,8 +859,8 @@
     <section class="help-panel" id="helpPanel" aria-label="使用說明" hidden>
       <div class="help-head">
         <div>
-          <h2>使用說明</h2>
-          <p>這個練習板是給平板使用的。小朋友只要照著上方提示，一次做一件事。</p>
+          <h2 id="helpTitle">使用說明</h2>
+          <p id="helpIntro">左上角可以切換「減」和「加」。位數和數字板共用，下面會換成對應的練習頁面。</p>
         </div>
         <button class="action" type="button" id="helpClose">收起說明</button>
       </div>
@@ -858,34 +868,33 @@
       <div class="help-grid">
         <article class="help-card">
           <h3>小朋友怎麼做</h3>
-          <ol>
-            <li>先看最右邊的個位。</li>
-            <li>如果上面的數不夠減，就向左邊借 1：點左邊上面的數字，把它劃掉。</li>
-            <li>在被借走的那一欄上方小格，寫「少 1 之後的數字」。</li>
-            <li>個位上方沒有「變成」小格，這是正常的。</li>
-            <li>點下面數字旁邊的小格，寫「補到 10 還差幾」。</li>
-            <li>寫好後，同一個位值會用同色大圈圈起來；有效的上方數字和補數要一起看。</li>
-            <li>點答案格，用平板數字板寫答案，再繼續往左算。</li>
+          <ol id="helpSteps">
+            <li>先選左上角的「減」或「加」。</li>
+            <li>從最右邊的個位開始，一欄一欄往左做。</li>
+            <li>減法不夠減時，照提示劃掉、寫變成幾、寫補到 10。</li>
+            <li>加法超過 10 時，把 1 寫到左邊上方的進位框。</li>
+            <li>點答案格或小格，用平板數字板輸入。</li>
             <li>做完按紅色「檢查」；換題按藍色「新題目」；要清空這題按橡皮擦圖示。</li>
           </ol>
         </article>
 
         <article class="help-card">
           <h3>畫面上的記號</h3>
-          <div class="sample-row">
-            <div class="sample-mark"><span class="sample-digit slash">6</span>上面的數字借出 1，要劃掉。</div>
-            <div class="sample-mark"><span class="sample-box">5</span>上方小格只出現在會借出的位值，寫借出後變成幾。</div>
-            <div class="sample-mark"><span class="sample-box">3</span>旁邊小格寫補到 10 的數字。</div>
-            <div class="sample-mark"><span class="sample-pair"><span>7</span><span>3</span></span>同一個位值會用同色大圈圈起來，表示要一起看。</div>
-            <div class="sample-mark"><span class="sample-pair"><span>6</span><span>2</span></span>如果上方數字已經變成 6，就看上方小格的 6，不看被劃掉的原數字。</div>
+          <div class="sample-row" id="helpMarks">
+            <div class="sample-mark"><span class="sample-digit slash">6</span>減法：上面的數字借出 1，要劃掉。</div>
+            <div class="sample-mark"><span class="sample-box">5</span>減法：上方小格寫借出後變成幾。</div>
+            <div class="sample-mark"><span class="sample-box">3</span>減法：旁邊小格寫補到 10 的數字。</div>
+            <div class="sample-mark"><span class="sample-pair"><span>7</span><span>3</span></span>減法：同一個位值會用同色大圈圈起來。</div>
+            <div class="sample-mark"><span class="sample-box">1</span>加法：十位、百位、千位、萬位上方都保留進位框。</div>
           </div>
         </article>
 
         <article class="help-card">
           <h3>家長或老師可以注意</h3>
-          <ul>
+          <ul id="helpTeacherNotes">
             <li>先讓孩子照提示完成，不急著算快。</li>
-            <li>孩子不懂時，可以問：「這一欄夠不夠減？」</li>
+            <li>孩子不懂減法時，可以問：「這一欄夠不夠減？」</li>
+            <li>孩子不懂加法時，可以問：「這一欄加起來有沒有超過 9？」</li>
             <li>按「檢查」後，綠色代表正確，紅色代表需要再看一次。</li>
             <li>完成題數會在第一次檢查通過時加 1；同一題重複檢查不會一直加。</li>
             <li>按「重置」只會清完成題數，不會換掉現在這題。</li>
@@ -897,7 +906,7 @@
     </section>
 
     <section class="practice">
-      <section class="stage" aria-label="借位減法操作區">
+      <section class="stage" id="practiceStage" aria-label="借位減法操作區">
         <div class="coach">
           <div class="step-number" id="stepNumber">1</div>
           <div>
@@ -974,6 +983,7 @@
   <script>
     const placeNames = ["萬", "千", "百", "十", "個"];
     const state = {
+      mode: "subtract",
       digits: 2,
       problem: null,
       activeInput: null,
@@ -984,7 +994,9 @@
     };
 
     const elements = {
+      modeButtons: [...document.querySelectorAll("[data-mode]")],
       digitButtons: [...document.querySelectorAll("[data-digits]")],
+      practiceStage: document.querySelector("#practiceStage"),
       paper: document.querySelector("#paper"),
       problemLine: document.querySelector("#problemLine"),
       placeRow: document.querySelector("#placeRow"),
@@ -996,6 +1008,11 @@
       helpToggle: document.querySelector("#helpToggle"),
       helpClose: document.querySelector("#helpClose"),
       helpPanel: document.querySelector("#helpPanel"),
+      helpTitle: document.querySelector("#helpTitle"),
+      helpIntro: document.querySelector("#helpIntro"),
+      helpSteps: document.querySelector("#helpSteps"),
+      helpMarks: document.querySelector("#helpMarks"),
+      helpTeacherNotes: document.querySelector("#helpTeacherNotes"),
       clearWork: document.querySelector("#clearWork"),
       checkAnswer: document.querySelector("#checkAnswer"),
       stepNumber: document.querySelector("#stepNumber"),
@@ -1005,9 +1022,70 @@
       resultText: document.querySelector("#resultText"),
       completedCount: document.querySelector("#completedCount"),
       resetStats: document.querySelector("#resetStats"),
+      miniStepsList: document.querySelector("#miniSteps"),
       miniSteps: [...document.querySelectorAll("#miniSteps li")],
       padStatus: document.querySelector("#padStatus"),
       padKeys: [...document.querySelectorAll("[data-key]")]
+    };
+
+    const helpContent = {
+      subtract: {
+        title: "借位減法使用說明",
+        intro: "現在是借位減法頁面。照著提示劃掉、寫變成幾、寫補數，再把同一欄的一組圈起來。",
+        steps: [
+          "先看最右邊的個位。",
+          "如果上面的數不夠減，就向左邊借 1：點左邊上面的數字，把它劃掉。",
+          "在被借走的那一欄上方小格，寫「少 1 之後的數字」。",
+          "個位上方沒有「變成」小格，這是正常的。",
+          "點下面數字旁邊的小格，寫「補到 10 還差幾」。",
+          "寫好後，同一個位值會用同色大圈圈起來；有效的上方數字和補數要一起看。",
+          "點答案格，用平板數字板寫答案，再繼續往左算。",
+          "做完按紅色「檢查」；換題按藍色「新題目」；要清空這題按橡皮擦圖示。"
+        ],
+        marks: [
+          { kind: "slash", value: "6", text: "上面的數字借出 1，要劃掉。" },
+          { kind: "box", value: "5", text: "上方小格寫借出後變成幾。" },
+          { kind: "box", value: "3", text: "旁邊小格寫補到 10 的數字。" },
+          { kind: "pair", values: ["7", "3"], text: "同一個位值會用同色大圈圈起來，表示要一起看。" },
+          { kind: "pair", values: ["6", "2"], text: "如果上方數字已經變成 6，就看上方小格的 6，不看被劃掉的原數字。" }
+        ],
+        notes: [
+          "先讓孩子照提示完成，不急著算快。",
+          "孩子不懂時，可以問：「這一欄夠不夠減？」",
+          "按「檢查」後，綠色代表正確，紅色代表需要再看一次。",
+          "完成題數會在第一次檢查通過時加 1；同一題重複檢查不會一直加。",
+          "按「重置」只會清完成題數，不會換掉現在這題。",
+          "答案前面的 0 可以留白，和紙筆直式一樣。",
+          "題目太難時，先選 2 位數，熟了再選 3 到 5 位數。"
+        ]
+      },
+      add: {
+        title: "進位加法使用說明",
+        intro: "現在是進位加法頁面。上方保留進位框，孩子從個位開始，把進位 1 寫到左邊上一欄。",
+        steps: [
+          "先看最右邊的個位。",
+          "把上面和下面的數字加起來；如果這一欄上方有進位 1，也要一起加。",
+          "答案格只寫這一欄的個位數，例如 8 加 7 是 15，下面先寫 5。",
+          "如果加起來超過 9，就把 1 寫到左邊上方的進位框。",
+          "十位、百位、千位、萬位上方都有進位框；個位上方沒有進位框是正常的。",
+          "一路往左做，最後按紅色「檢查」；換題按藍色「新題目」；要清空這題按橡皮擦圖示。"
+        ],
+        marks: [
+          { kind: "box", value: "1", text: "進位框：上一欄超過 9 時，在左邊上方寫 1。" },
+          { kind: "pair", values: ["8", "7"], text: "同一欄上下兩個數字先加起來。" },
+          { kind: "box", value: "5", text: "答案格只寫個位數；15 先寫 5。" },
+          { kind: "box", value: "1", text: "下一欄計算時，要記得把上方的進位 1 一起加。" }
+        ],
+        notes: [
+          "進位加法不需要補數框，也不用畫借位圈。",
+          "孩子不懂時，可以問：「這一欄加起來有沒有超過 9？」",
+          "看到上方進位框有 1，下一欄就要多加 1。",
+          "按「檢查」後，綠色代表正確，紅色代表需要再看一次。",
+          "完成題數會在第一次檢查通過時加 1；同一題重複檢查不會一直加。",
+          "答案前面的 0 可以留白，和紙筆直式一樣。",
+          "題目太難時，先選 2 位數，熟了再選 3 到 5 位數。"
+        ]
+      }
     };
 
     function randomInt(min, max) {
@@ -1040,7 +1118,7 @@
       return digits;
     }
 
-    function computeDetails(topNumber, bottomNumber, length) {
+    function computeSubtractDetails(topNumber, bottomNumber, length) {
       const top = toDigits(topNumber, length);
       const bottom = toDigits(bottomNumber, length);
       const answer = toDigits(topNumber - bottomNumber, length);
@@ -1071,13 +1149,35 @@
       return { top, bottom, answer, answerText, borrow, lent, reduced, complement, baseTop };
     }
 
-    function makeProblem() {
+    function computeAddDetails(topNumber, bottomNumber, length) {
+      const top = toDigits(topNumber, length);
+      const bottom = toDigits(bottomNumber, length);
+      const answerNumber = topNumber + bottomNumber;
+      const answer = toDigits(answerNumber, length);
+      const answerText = String(answerNumber).padStart(length, " ").split("");
+      const carryIn = Array(length).fill("");
+      const carryOut = Array(length).fill(false);
+      const columnTotals = Array(length).fill(0);
+      let carry = 0;
+
+      for (let col = length - 1; col >= 0; col -= 1) {
+        carryIn[col] = carry ? "1" : "";
+        const total = top[col] + bottom[col] + carry;
+        columnTotals[col] = total;
+        carryOut[col] = total >= 10;
+        carry = carryOut[col] ? 1 : 0;
+      }
+
+      return { top, bottom, answer, answerText, carryIn, carryOut, columnTotals };
+    }
+
+    function makeSubtractProblem() {
       const length = state.digits;
       for (let attempt = 0; attempt < 900; attempt += 1) {
         const topDigits = makeTopDigits(length);
         const top = fromDigits(topDigits);
         const bottom = randomInt(1, top - 1);
-        const details = computeDetails(top, bottom, length);
+        const details = computeSubtractDetails(top, bottom, length);
         const hasBorrow = details.borrow.some(Boolean);
         const noChainPastLeft = details.baseTop[0] >= details.bottom[0];
         if (hasBorrow && noChainPastLeft) {
@@ -1088,8 +1188,46 @@
         top: 65,
         bottom: 27,
         answer: 38,
-        details: computeDetails(65, 27, 2)
+        details: computeSubtractDetails(65, 27, 2)
       };
+    }
+
+    function makeAddProblem() {
+      const length = state.digits;
+      const min = 10 ** (length - 1);
+      const max = 10 ** length - 1;
+      for (let attempt = 0; attempt < 1200; attempt += 1) {
+        const top = randomInt(min, max);
+        const bottom = randomInt(1, max);
+        if (top + bottom > max) continue;
+        const details = computeAddDetails(top, bottom, length);
+        const hasCarry = details.carryIn.some(Boolean);
+        if (hasCarry) {
+          return { top, bottom, answer: top + bottom, details };
+        }
+      }
+
+      if (length === 2) {
+        return {
+          top: 47,
+          bottom: 35,
+          answer: 82,
+          details: computeAddDetails(47, 35, 2)
+        };
+      }
+
+      const top = Number("4".padEnd(length, "7"));
+      const bottom = Number("3".padEnd(length, "5"));
+      return {
+        top,
+        bottom,
+        answer: top + bottom,
+        details: computeAddDetails(top, bottom, length)
+      };
+    }
+
+    function makeProblem() {
+      return state.mode === "add" ? makeAddProblem() : makeSubtractProblem();
     }
 
     function clearElement(element) {
@@ -1131,7 +1269,10 @@
       const place = currentPlaceNames();
       const topText = visibleDigits(problem.top, length);
       const bottomText = visibleDigits(problem.bottom, length);
+      const isAdd = state.mode === "add";
+      const operator = isAdd ? "+" : "−";
       elements.paper.style.setProperty("--cols", String(length));
+      elements.practiceStage.setAttribute("aria-label", isAdd ? "進位加法操作區" : "借位減法操作區");
 
       [
         elements.problemLine,
@@ -1144,7 +1285,7 @@
       clearGroupMarks();
 
       elements.problemLine.append(makeCell("span", "", String(problem.top)));
-      elements.problemLine.append(document.createTextNode(" - "));
+      elements.problemLine.append(document.createTextNode(` ${operator} `));
       elements.problemLine.append(makeCell("span", "", String(problem.bottom)));
       elements.problemLine.append(document.createTextNode(" = ?"));
 
@@ -1153,12 +1294,12 @@
         elements.placeRow.append(makeCell("div", "place", name));
       });
 
-      elements.topNoteRow.append(makeCell("div", "row-label", "變成"));
+      elements.topNoteRow.append(makeCell("div", "row-label", isAdd ? "進位" : "變成"));
       for (let col = 0; col < length; col += 1) {
         if (col === length - 1) {
           elements.topNoteRow.append(makeCell("div", "note-placeholder", ""));
         } else {
-          const input = makeInput("note-input top-note", col, "變成幾", 1);
+          const input = makeInput(`note-input top-note${isAdd ? " carry-note" : ""}`, col, isAdd ? "進位" : "變成幾", 1);
           input.addEventListener("input", () => {
             clearCheckStyles();
             updateAddGroups();
@@ -1170,36 +1311,44 @@
 
       elements.topRow.append(makeCell("div", "operator", ""));
       for (let col = 0; col < length; col += 1) {
-        const cell = makeCell("button", `number-cell top-digit${topText[col] === " " ? " blank" : ""}`, topText[col] === " " ? "0" : topText[col]);
-        cell.type = "button";
+        const cell = makeCell(isAdd ? "div" : "button", `number-cell top-digit${topText[col] === " " ? " blank" : ""}`, topText[col] === " " ? "0" : topText[col]);
+        if (!isAdd) {
+          cell.type = "button";
+        }
         cell.dataset.col = String(col);
         cell.dataset.role = "top";
-        cell.addEventListener("click", () => {
-          if (cell.classList.contains("blank")) return;
-          cell.classList.toggle("slash");
-          clearCheckStyles();
-          updateGuide();
-        });
+        if (!isAdd) {
+          cell.addEventListener("click", () => {
+            if (cell.classList.contains("blank")) return;
+            cell.classList.toggle("slash");
+            clearCheckStyles();
+            updateGuide();
+          });
+        }
         elements.topRow.append(cell);
       }
 
-      elements.bottomRow.append(makeCell("div", "operator", "−"));
+      elements.bottomRow.append(makeCell("div", "operator", operator));
       for (let col = 0; col < length; col += 1) {
-        const cell = makeCell("button", `number-cell bottom-digit${bottomText[col] === " " ? " blank" : ""}`, bottomText[col] === " " ? "0" : bottomText[col]);
-        cell.type = "button";
+        const cell = makeCell(isAdd ? "div" : "button", `number-cell bottom-digit${bottomText[col] === " " ? " blank" : ""}`, bottomText[col] === " " ? "0" : bottomText[col]);
+        if (!isAdd) {
+          cell.type = "button";
+        }
         cell.dataset.col = String(col);
         cell.dataset.role = "bottom";
-        cell.addEventListener("click", event => {
-          if (event.target.matches("input") || cell.classList.contains("blank")) return;
-          setActiveInput(cell.querySelector(".bottom-note"));
-        });
-        const note = makeInput("note-input bottom-note", col, "補到10", 1);
-        note.addEventListener("input", () => {
-          clearCheckStyles();
-          updateAddGroups();
-          updateGuide();
-        });
-        cell.append(note);
+        if (!isAdd) {
+          cell.addEventListener("click", event => {
+            if (event.target.matches("input") || cell.classList.contains("blank")) return;
+            setActiveInput(cell.querySelector(".bottom-note"));
+          });
+          const note = makeInput("note-input bottom-note", col, "補到10", 1);
+          note.addEventListener("input", () => {
+            clearCheckStyles();
+            updateAddGroups();
+            updateGuide();
+          });
+          cell.append(note);
+        }
         elements.bottomRow.append(cell);
       }
 
@@ -1246,7 +1395,10 @@
 
     function updateAddGroups() {
       const details = state.problem?.details;
-      if (!details) return;
+      if (!details || state.mode !== "subtract") {
+        clearGroupMarks();
+        return;
+      }
       clearGroupMarks();
       bottomNoteInputs().forEach(input => {
         const col = Number(input.dataset.col);
@@ -1370,12 +1522,7 @@
         input.value = key;
       }
       input.dispatchEvent(new Event("input", { bubbles: true }));
-      if (input.classList.contains("answer-input") && key !== "clear") {
-        const nextCol = Number(input.dataset.col) - 1;
-        if (nextCol >= 0) {
-          setActiveInput(answerInputs()[nextCol]);
-        }
-      } else if (key === "clear") {
+      if (key === "clear") {
         setActiveInput(input);
       }
     }
@@ -1388,7 +1535,7 @@
       return answerInputs()[col].value === expected;
     }
 
-    function getNextTask() {
+    function getSubtractNextTask() {
       const details = state.problem.details;
       const length = state.digits;
 
@@ -1416,8 +1563,30 @@
       return { type: "done", col: 0 };
     }
 
-    function updateGuide() {
-      const task = getNextTask();
+    function getAddNextTask() {
+      const details = state.problem.details;
+      const length = state.digits;
+
+      for (let col = length - 1; col >= 0; col -= 1) {
+        if (!isAnswerDone(col)) {
+          return { type: "addAnswer", col };
+        }
+
+        const carryTarget = col - 1;
+        if (carryTarget >= 0 && details.carryIn[carryTarget] && topNoteInput(carryTarget)?.value !== details.carryIn[carryTarget]) {
+          return { type: "carry", col: carryTarget, from: col };
+        }
+      }
+
+      return { type: "done", col: 0 };
+    }
+
+    function getNextTask() {
+      return state.mode === "add" ? getAddNextTask() : getSubtractNextTask();
+    }
+
+    function updateSubtractGuide() {
+      const task = getSubtractNextTask();
       const details = state.problem.details;
       const place = currentPlaceNames();
       document.querySelectorAll(".focus-target").forEach(element => element.classList.remove("focus-target"));
@@ -1487,7 +1656,113 @@
       elements.resultBox.classList.add("good");
     }
 
+    function updateAddGuide() {
+      const task = getAddNextTask();
+      const details = state.problem.details;
+      const place = currentPlaceNames();
+      document.querySelectorAll(".focus-target").forEach(element => element.classList.remove("focus-target"));
+      elements.miniSteps.forEach((item, index) => {
+        item.classList.remove("active", "done");
+        if (task.type === "done") {
+          item.classList.add("done");
+        } else if (
+          (task.type === "addAnswer" && index === 0) ||
+          (task.type === "carry" && index === 1)
+        ) {
+          item.classList.add("active");
+        }
+      });
+
+      if (task.type === "addAnswer") {
+        const carry = details.carryIn[task.col] ? 1 : 0;
+        const total = details.columnTotals[task.col];
+        const carryText = carry ? `，再加上進位 1` : "";
+        elements.stepNumber.textContent = "1";
+        elements.coachTitle.textContent = `算${place[task.col]}位`;
+        elements.coachText.textContent = `${details.top[task.col]} 加 ${details.bottom[task.col]}${carryText}，下面寫 ${details.answerText[task.col]}。`;
+        elements.resultText.textContent = total >= 10
+          ? `${total} 超過 9，答案格寫 ${details.answerText[task.col]}，等一下把 1 進到左邊。`
+          : `在${place[task.col]}位答案格寫 ${details.answerText[task.col]}。`;
+        answerInputs()[task.col].classList.add("focus-target");
+        setActiveInput(answerInputs()[task.col]);
+        if (details.carryOut[task.col]) {
+          topNoteInput(task.col - 1)?.classList.add("focus-target");
+        }
+        return;
+      }
+
+      if (task.type === "carry") {
+        elements.stepNumber.textContent = "2";
+        elements.coachTitle.textContent = `進 1 到${place[task.col]}位`;
+        elements.coachText.textContent = `剛剛${place[task.from]}位加起來超過 9，把 1 寫在左邊上方的進位框。`;
+        elements.resultText.textContent = `在${place[task.col]}位上方進位框寫 1。`;
+        topNoteInput(task.col)?.classList.add("focus-target");
+        setActiveInput(topNoteInput(task.col));
+        return;
+      }
+
+      elements.stepNumber.textContent = "好";
+      elements.coachTitle.textContent = "全部完成";
+      elements.coachText.textContent = "可以按檢查看看，也可以換下一題。";
+      elements.resultText.textContent = "做完了，按檢查。";
+      elements.resultBox.classList.add("good");
+    }
+
+    function updateGuide() {
+      if (state.mode === "add") {
+        updateAddGuide();
+        return;
+      }
+      updateSubtractGuide();
+    }
+
+    function checkAddWork() {
+      state.checked = true;
+      clearCheckStyles();
+      let ok = true;
+      const details = state.problem.details;
+
+      answerInputs().forEach((input, col) => {
+        const expected = details.answerText[col];
+        const good = expected === " " ? input.value === "" || input.value === "0" : input.value === expected;
+        input.classList.add(good ? "good" : "bad");
+        if (!good) ok = false;
+      });
+
+      topNoteInputs().forEach(input => {
+        const col = Number(input.dataset.col);
+        const expected = details.carryIn[col];
+        if (expected) {
+          const good = input.value === expected;
+          input.classList.add(good ? "good" : "bad");
+          if (!good) ok = false;
+        } else if (input.value) {
+          input.classList.add("bad");
+          ok = false;
+        }
+      });
+
+      const orderOk = state.touchedAnswers.length === 0 || state.touchedAnswers[0] === state.digits - 1;
+      if (!orderOk) ok = false;
+
+      if (ok && !state.problemCounted) {
+        state.completedCount += 1;
+        state.problemCounted = true;
+        updateStats();
+      }
+
+      elements.resultBox.classList.toggle("good", ok);
+      elements.resultBox.classList.toggle("bad", !ok);
+      elements.resultText.textContent = ok
+        ? `完成。${state.problem.top} + ${state.problem.bottom} = ${state.problem.answer}。`
+        : "看紅色的地方，再修一次。記得從個位開始。";
+    }
+
     function checkWork() {
+      if (state.mode === "add") {
+        checkAddWork();
+        return;
+      }
       state.checked = true;
       clearCheckStyles();
       let ok = true;
@@ -1554,8 +1829,7 @@
         input.value = "";
       });
       topCells().forEach(cell => cell.classList.remove("slash"));
-      topCells().forEach(cell => cell.classList.remove("add-group"));
-      bottomNoteInputs().forEach(input => input.classList.remove("add-group"));
+      clearGroupMarks();
       state.touchedAnswers = [];
       clearCheckStyles();
       updateAddGroups();
@@ -1569,6 +1843,76 @@
       renderProblem();
     }
 
+    function renderTextList(list, items) {
+      list.replaceChildren(...items.map(text => {
+        const item = document.createElement("li");
+        item.textContent = text;
+        return item;
+      }));
+    }
+
+    function makeSampleSymbol(mark) {
+      if (mark.kind === "pair") {
+        const pair = document.createElement("span");
+        pair.className = "sample-pair";
+        mark.values.forEach(value => {
+          const digit = document.createElement("span");
+          digit.textContent = value;
+          pair.append(digit);
+        });
+        return pair;
+      }
+
+      const symbol = document.createElement("span");
+      symbol.className = mark.kind === "slash" ? "sample-digit slash" : "sample-box";
+      symbol.textContent = mark.value;
+      return symbol;
+    }
+
+    function renderHelpPanel() {
+      const content = helpContent[state.mode];
+      elements.helpTitle.textContent = content.title;
+      elements.helpIntro.textContent = content.intro;
+      renderTextList(elements.helpSteps, content.steps);
+      renderTextList(elements.helpTeacherNotes, content.notes);
+      elements.helpMarks.replaceChildren(...content.marks.map(mark => {
+        const row = document.createElement("div");
+        row.className = "sample-mark";
+        row.append(makeSampleSymbol(mark), document.createTextNode(mark.text));
+        return row;
+      }));
+    }
+
+    function renderMiniSteps() {
+      const steps = state.mode === "add"
+        ? ["算這一欄加起來", "有進位就寫上方 1", "寫答案、往左做", "完成後檢查"]
+        : ["看這一欄夠不夠減", "不夠就劃左邊、寫少 1", "寫補數、圈一組", "寫答案"];
+      elements.miniStepsList.replaceChildren(...steps.map((text, index) => {
+        const item = document.createElement("li");
+        const badge = document.createElement("span");
+        badge.textContent = String(index + 1);
+        item.append(badge, document.createTextNode(text));
+        return item;
+      }));
+      elements.miniSteps = [...elements.miniStepsList.querySelectorAll("li")];
+    }
+
+    function updateModeButtons() {
+      elements.modeButtons.forEach(button => {
+        button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode));
+      });
+    }
+
+    function setMode(mode) {
+      if (state.mode === mode) return;
+      state.mode = mode;
+      document.title = mode === "add" ? "進位加法練習板" : "借位減法練習板";
+      updateModeButtons();
+      renderHelpPanel();
+      renderMiniSteps();
+      resetProblem();
+    }
+
     function updateStats() {
       elements.completedCount.textContent = String(state.completedCount);
     }
@@ -1577,6 +1921,10 @@
       state.completedCount = 0;
       updateStats();
     }
+
+    elements.modeButtons.forEach(button => {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
+    });
 
     elements.digitButtons.forEach(button => {
       button.addEventListener("click", () => {
@@ -1612,10 +1960,14 @@
       answerInputs,
       topNoteInputs,
       bottomNoteInputs,
+      setMode,
       topCells,
       bottomCells
     };
 
+    updateModeButtons();
+    renderHelpPanel();
+    renderMiniSteps();
     resetProblem();
   </script>
 </body>

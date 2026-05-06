@@ -1222,8 +1222,8 @@
   <main class="app">
     <header class="top">
       <div class="mode-switch" aria-label="選擇練習頁面">
-        <button class="mark mode-button add-mode" type="button" data-mode="add" aria-pressed="false" aria-label="進位加法" title="進位加法">加</button>
-        <button class="mark mode-button" type="button" data-mode="subtract" aria-pressed="true" aria-label="借位減法" title="借位減法">減</button>
+        <button class="mark mode-button add-mode" type="button" data-mode="add" aria-pressed="true" aria-label="進位加法" title="進位加法">加</button>
+        <button class="mark mode-button" type="button" data-mode="subtract" aria-pressed="false" aria-label="借位減法" title="借位減法">減</button>
         <button class="mark mode-button long-multiply-mode" type="button" data-mode="longMultiply" aria-pressed="false" aria-label="直式乘法" title="直式乘法">乘</button>
         <button class="mark mode-button multiply-mode" type="button" data-mode="multiply" aria-pressed="false" aria-label="九九乘法表" title="九九乘法表">九</button>
       </div>
@@ -1367,7 +1367,7 @@
     const placeNames = ["萬", "千", "百", "十", "個"];
     const longRowColors = ["#356ac3", "#219b6d", "#ff7a1a", "#e64d86", "#7048b8"];
     const state = {
-      mode: "subtract",
+      mode: "add",
       digits: 2,
       multiplyFactor: "all",
       multiplyStats: {

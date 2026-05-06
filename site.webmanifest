@@ -1,0 +1,21 @@
+{
+  "name": "直式運算練習板",
+  "short_name": "直式練習",
+  "description": "加法、減法、直式乘法與九九乘法的平板練習工具。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5fbf8",
+  "theme_color": "#087f8c",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

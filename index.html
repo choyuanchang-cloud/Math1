@@ -114,6 +114,14 @@
       background: conic-gradient(from 180deg, #f2c14e, #219b6d, #356ac3, #f2c14e);
     }
 
+    .mode-button.long-multiply-mode[aria-pressed="true"] {
+      background: conic-gradient(from 180deg, #ff7a1a, #f2c14e, #219b6d, #ff7a1a);
+    }
+
+    .mode-button.multiply-mode[aria-pressed="true"] {
+      background: conic-gradient(from 180deg, #8a55c7, #356ac3, #f2c14e, #8a55c7);
+    }
+
     .controls {
       display: flex;
       align-items: center;
@@ -131,6 +139,10 @@
       border: 1px solid var(--soft);
       border-radius: var(--radius);
       background: #f7faf8;
+    }
+
+    .digits[hidden] {
+      display: none;
     }
 
     .digits-label {
@@ -288,8 +300,9 @@
     .sample-digit {
       display: inline-grid;
       place-items: center;
-      width: 36px;
+      min-width: 36px;
       height: 36px;
+      padding: 0 6px;
       border-radius: 6px;
       border: 2px solid var(--soft);
       background: #ffffff;
@@ -408,6 +421,18 @@
       background-size: 26px 26px;
     }
 
+    .paper.multiply-paper {
+      width: min(100%, 720px);
+      min-width: min(100%, 720px);
+      padding: 18px;
+    }
+
+    .paper.long-multiply-paper {
+      width: min(100%, 820px);
+      min-width: min(100%, 820px);
+      padding: 18px;
+    }
+
     .problem-line {
       display: flex;
       justify-content: center;
@@ -425,6 +450,309 @@
       min-height: 38px;
       border-radius: 6px;
       background: #eaf4f0;
+    }
+
+    .multiply-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      font-size: 1.35rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .multiply-title span {
+      background: #eaf4f0;
+    }
+
+    .factor-tabs {
+      display: grid;
+      grid-template-columns: 1.35fr repeat(9, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .factor-tab {
+      min-height: 44px;
+      border: 1px solid var(--soft);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 950;
+    }
+
+    .factor-tab[aria-pressed="true"] {
+      color: #ffffff;
+      border-color: var(--teal);
+      background: var(--teal);
+    }
+
+    .multiply-table {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .multiply-table[hidden] {
+      display: none;
+    }
+
+    .fact-card {
+      display: grid;
+      place-items: center;
+      min-height: 48px;
+      border: 1px solid var(--soft);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.82);
+      font-size: 1.12rem;
+      font-weight: 950;
+    }
+
+    .fact-card.active {
+      border-color: var(--yellow);
+      background: var(--focus);
+      box-shadow: inset 0 0 0 3px rgba(242, 193, 78, 0.25);
+    }
+
+    .multiply-quiz {
+      display: grid;
+      place-items: center;
+      gap: 12px;
+      padding: 18px 10px 12px;
+    }
+
+    .quiz-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: clamp(2.2rem, 7vw, 4.4rem);
+      font-weight: 950;
+      line-height: 1.05;
+    }
+
+    .quiz-equation span {
+      min-width: 72px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #eaf4f0;
+      text-align: center;
+    }
+
+    .answer-input.multiply-answer {
+      width: min(220px, 70vw);
+      height: 88px;
+      font-size: 3rem;
+    }
+
+    .multiply-answer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .multiply-submit {
+      width: 88px;
+      height: 88px;
+      color: #ffffff;
+      border-color: var(--teal);
+      background: var(--teal);
+    }
+
+    .multiply-submit svg,
+    .table-toggle svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .table-toggle {
+      width: 48px;
+      min-height: 44px;
+      color: var(--teal);
+    }
+
+    .multiply-score {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .score-chip {
+      padding: 10px;
+      border: 1px solid var(--soft);
+      border-radius: 6px;
+      background: #fbfdfc;
+      text-align: center;
+      font-weight: 950;
+    }
+
+    .score-chip span {
+      display: block;
+      color: var(--teal);
+      font-size: 1.35rem;
+    }
+
+    .long-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 1.12rem;
+      font-weight: 950;
+    }
+
+    .long-title span {
+      display: inline-grid;
+      place-items: center;
+      min-height: 34px;
+      padding: 0 10px;
+      border-radius: 6px;
+      color: var(--ink);
+      background: #eaf4f0;
+    }
+
+    .long-setup {
+      display: grid;
+      width: min(100%, var(--long-grid-width, 390px));
+      gap: 6px;
+      margin: 0 auto 14px;
+    }
+
+    .long-place {
+      display: grid;
+      place-items: center;
+      min-height: 28px;
+      color: var(--teal);
+      border-radius: 6px;
+      background: #eef7f3;
+      font-weight: 950;
+    }
+
+    .long-digit,
+    .long-operator,
+    .long-spacer {
+      min-width: 0;
+      height: 58px;
+    }
+
+    .long-digit,
+    .long-operator {
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--soft);
+      border-radius: 6px;
+      background: #ffffff;
+      font-size: 2rem;
+      font-weight: 950;
+    }
+
+    .long-operator {
+      color: var(--teal);
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .long-rule {
+      height: 5px;
+      width: 100%;
+      margin: 4px auto 0;
+      border-radius: 999px;
+      background: var(--line);
+    }
+
+    .long-work {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+    }
+
+    .long-row {
+      width: min(100%, var(--long-row-width, 420px));
+      padding: 10px;
+      border: 2px solid var(--row-color, var(--soft));
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .long-row-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--row-color, var(--teal));
+      font-weight: 950;
+    }
+
+    .long-row-head span {
+      display: inline-grid;
+      place-items: center;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--row-color, var(--teal));
+    }
+
+    .long-cells {
+      display: grid;
+      grid-template-columns: repeat(var(--long-cols, 6), minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .long-blank,
+    .long-input {
+      min-width: 0;
+      height: 58px;
+      border: 2px solid var(--soft);
+      border-radius: 6px;
+      background: #fffefa;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 950;
+    }
+
+    .long-blank {
+      border-style: dashed;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    .long-input {
+      color: var(--ink);
+    }
+
+    .long-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 4px rgba(8, 127, 140, 0.14);
+      outline: none;
+    }
+
+    .long-final {
+      width: min(100%, var(--long-row-width, 420px));
+      margin: 10px auto 0;
+      padding: 10px;
+      border: 2px solid #e64d86;
+      border-radius: 8px;
+      background: #fff8fb;
+    }
+
+    .long-final .long-row-head {
+      color: #e64d86;
+    }
+
+    .long-final .long-row-head span {
+      background: #e64d86;
     }
 
     .math-grid {
@@ -584,6 +912,13 @@
       text-align: center;
       font-size: 2.3rem;
       font-weight: 950;
+    }
+
+    .long-input {
+      aspect-ratio: auto;
+      min-height: 0;
+      height: 58px;
+      font-size: 2rem;
     }
 
     .answer-input.good,
@@ -834,6 +1169,40 @@
       .operator {
         font-size: 2.55rem;
       }
+
+      .factor-tabs {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .multiply-table {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .multiply-score {
+        grid-template-columns: 1fr;
+      }
+
+      .long-digit,
+      .long-operator,
+      .long-spacer {
+        height: 50px;
+      }
+
+      .long-digit,
+      .long-operator {
+        font-size: 1.65rem;
+      }
+
+      .long-cells {
+        grid-template-columns: repeat(var(--long-cols, 6), minmax(0, 1fr));
+        gap: 4px;
+      }
+
+      .long-input,
+      .long-blank {
+        height: 50px;
+        font-size: 1.65rem;
+      }
     }
   </style>
 </head>
@@ -841,8 +1210,10 @@
   <main class="app">
     <header class="top">
       <div class="mode-switch" aria-label="選擇練習頁面">
-        <button class="mark mode-button" type="button" data-mode="subtract" aria-pressed="true" aria-label="借位減法" title="借位減法">減</button>
         <button class="mark mode-button add-mode" type="button" data-mode="add" aria-pressed="false" aria-label="進位加法" title="進位加法">加</button>
+        <button class="mark mode-button" type="button" data-mode="subtract" aria-pressed="true" aria-label="借位減法" title="借位減法">減</button>
+        <button class="mark mode-button long-multiply-mode" type="button" data-mode="longMultiply" aria-pressed="false" aria-label="直式乘法" title="直式乘法">乘</button>
+        <button class="mark mode-button multiply-mode" type="button" data-mode="multiply" aria-pressed="false" aria-label="九九乘法表" title="九九乘法表">九</button>
       </div>
       <div class="controls" aria-label="練習設定">
         <div class="digits" role="group" aria-label="選擇位數">
@@ -915,7 +1286,7 @@
           </div>
           <div class="stats-card" aria-label="完成題數統計">
             <div>
-              <p class="stats-number">完成 <span id="completedCount">0</span> 題</p>
+              <p class="stats-number"><span id="statsLabel">完成</span> <span id="completedCount">0</span><span id="statsSuffix"> 題</span></p>
             </div>
             <button class="action" type="button" id="resetStats">重置</button>
           </div>
@@ -982,9 +1353,20 @@
 
   <script>
     const placeNames = ["萬", "千", "百", "十", "個"];
+    const longRowColors = ["#356ac3", "#219b6d", "#ff7a1a", "#e64d86", "#7048b8"];
     const state = {
       mode: "subtract",
       digits: 2,
+      multiplyFactor: "all",
+      multiplyStats: {
+        correct: 0,
+        attempts: 0,
+        streak: 0
+      },
+      multiplyShowTable: true,
+      longMultiplyStats: {
+        completed: 0
+      },
       problem: null,
       activeInput: null,
       touchedAnswers: [],
@@ -995,6 +1377,7 @@
 
     const elements = {
       modeButtons: [...document.querySelectorAll("[data-mode]")],
+      digitsGroup: document.querySelector(".digits"),
       digitButtons: [...document.querySelectorAll("[data-digits]")],
       practiceStage: document.querySelector("#practiceStage"),
       paper: document.querySelector("#paper"),
@@ -1004,6 +1387,7 @@
       topRow: document.querySelector("#topRow"),
       bottomRow: document.querySelector("#bottomRow"),
       answerRow: document.querySelector("#answerRow"),
+      rule: document.querySelector(".rule"),
       newProblem: document.querySelector("#newProblem"),
       helpToggle: document.querySelector("#helpToggle"),
       helpClose: document.querySelector("#helpClose"),
@@ -1020,11 +1404,14 @@
       coachText: document.querySelector("#coachText"),
       resultBox: document.querySelector("#resultBox"),
       resultText: document.querySelector("#resultText"),
+      statsLabel: document.querySelector("#statsLabel"),
       completedCount: document.querySelector("#completedCount"),
+      statsSuffix: document.querySelector("#statsSuffix"),
       resetStats: document.querySelector("#resetStats"),
       miniStepsList: document.querySelector("#miniSteps"),
       miniSteps: [...document.querySelectorAll("#miniSteps li")],
       padStatus: document.querySelector("#padStatus"),
+      nextKey: document.querySelector("[data-key=\"next\"]"),
       padKeys: [...document.querySelectorAll("[data-key]")]
     };
 
@@ -1084,6 +1471,57 @@
           "完成題數會在第一次檢查通過時加 1；同一題重複檢查不會一直加。",
           "答案前面的 0 可以留白，和紙筆直式一樣。",
           "題目太難時，先選 2 位數，熟了再選 3 到 5 位數。"
+        ]
+      },
+      multiply: {
+        title: "九九乘法表使用說明",
+        intro: "現在是九九乘法表頁面。左邊先背一排，右邊做測驗，用得分看記憶熟不熟。",
+        steps: [
+          "先選要背的乘法表；選「混合」會從 81 個九九乘法題目裡隨機出題。",
+          "上方背誦表可顯示或隱藏；混合時會隨機列出 9 個乘法題。",
+          "看中間的大題目，把答案用平板數字板輸入。",
+          "答案可能是兩位數，請連續按兩個數字，例如 8×7 要按 5 再按 6。",
+          "可按答案旁邊的勾勾、紅色「檢查」，或直接按數字板「下一題」計分。",
+          "按「下一題」會先計分，再換下一題。"
+        ],
+        marks: [
+          { kind: "box", value: "7", text: "選一排來背，例如 7 的乘法表。" },
+          { kind: "pair", values: ["8", "7"], text: "測驗題會問兩個數字相乘。" },
+          { kind: "box", value: "56", text: "答案格可以輸入兩位數。" },
+          { kind: "box", value: "3/5", text: "得分會顯示答對題數和已作答題數。" }
+        ],
+        notes: [
+          "先背單一排，熟了再選「混合」測驗。",
+          "每題第一次按「檢查」才會計分；同一題重複檢查不會一直加分。",
+          "答對會增加答對題數，答錯會增加作答題數並中斷連續答對。",
+          "按「重置」會清掉九九乘法表的得分。",
+          "孩子卡住時，可以顯示背誦表；想測記憶時，可以把表格隱藏。",
+          "建議一次練 5 到 10 題，讓孩子看到自己的進步。"
+        ]
+      },
+      longMultiply: {
+        title: "直式乘法使用說明",
+        intro: "現在可以選 2 到 5 位數的直式乘法。先逐列寫部分積，再把所有列加起來。",
+        steps: [
+          "先看上方題目，確認被乘數寫在上面、乘數寫在下面。",
+          "第一列用乘數的個位去乘，從最右邊開始填部分積。",
+          "第二列開始，每往下一列，就多補 1 個 0，代表往左移一位。",
+          "位數選 5 時會有 5 列部分積，最後答案最多會用到 10 格。",
+          "所有部分積都完成後，把每一列加起來，填最後答案。",
+          "每一列都從右邊開始寫，做完按紅色「檢查」。"
+        ],
+        marks: [
+          { kind: "box", value: "×8", text: "第一列：用乘數的個位去乘。" },
+          { kind: "box", value: "×4", text: "第二列：用乘數的十位去乘，後面補 1 個 0。" },
+          { kind: "box", value: "×2", text: "後面的列：每下一列都再多補 1 個 0。" },
+          { kind: "box", value: "+", text: "最後把所有部分積加起來。" }
+        ],
+        notes: [
+          "上方位數可以選 2、3、4、5，乘法會產生相同位數相乘。",
+          "補上的 0 也要填，幫孩子建立位值和對齊概念。",
+          "孩子卡住時，可以提醒：「先做一列，再往下一列。」",
+          "按「檢查」後，綠色代表正確，紅色代表需要再看一次。",
+          "完成題數會在第一次檢查通過時加 1；同一題重複檢查不會一直加。"
         ]
       }
     };
@@ -1226,7 +1664,103 @@
       };
     }
 
+    function allMultiplyFacts() {
+      const facts = [];
+      for (let left = 1; left <= 9; left += 1) {
+        for (let right = 1; right <= 9; right += 1) {
+          facts.push({ left, right, answer: left * right });
+        }
+      }
+      return facts;
+    }
+
+    function shuffledFacts(facts) {
+      const items = [...facts];
+      for (let index = items.length - 1; index > 0; index -= 1) {
+        const swapIndex = randomInt(0, index);
+        [items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+      }
+      return items;
+    }
+
+    function makeMultiplyProblem() {
+      const allFacts = allMultiplyFacts();
+      const quizFact = state.multiplyFactor === "all"
+        ? allFacts[randomInt(0, allFacts.length - 1)]
+        : { left: Number(state.multiplyFactor), right: randomInt(1, 9) };
+      const left = quizFact.left;
+      const right = quizFact.right;
+      const tableFacts = state.multiplyFactor === "all"
+        ? shuffledFacts(allFacts).slice(0, 9)
+        : Array.from({ length: 9 }, (_, index) => ({
+            left,
+            right: index + 1,
+            answer: left * (index + 1)
+          }));
+      return {
+        top: left,
+        bottom: right,
+        answer: left * right,
+        details: {
+          answerText: String(left * right),
+          row: left,
+          tableFacts
+        }
+      };
+    }
+
+    function makeLongDigits(length) {
+      return Array.from({ length }, () => randomInt(1, 9));
+    }
+
+    function computeLongMultiplyDetails(topNumber, bottomNumber, length) {
+      const topDigits = String(topNumber).padStart(length, "0").split("");
+      const bottomDigits = String(bottomNumber).padStart(length, "0").split("");
+      const totalCols = length * 2;
+      const places = currentPlaceNames();
+      const partials = [];
+
+      for (let shift = 0; shift < length; shift += 1) {
+        const digit = Number(bottomDigits[length - 1 - shift]);
+        const place = `${places[length - 1 - shift]}位`;
+        const value = topNumber * digit * (10 ** shift);
+        partials.push({
+          place,
+          digit,
+          shift,
+          color: longRowColors[shift % longRowColors.length],
+          value,
+          text: String(value).padStart(totalCols, " ")
+        });
+      }
+
+      const answer = topNumber * bottomNumber;
+      return {
+        length,
+        totalCols,
+        topDigits,
+        bottomDigits,
+        partials,
+        answer,
+        answerText: String(answer).padStart(totalCols, " ")
+      };
+    }
+
+    function makeLongMultiplyProblem() {
+      const length = state.digits;
+      const top = fromDigits(makeLongDigits(length));
+      const bottom = fromDigits(makeLongDigits(length));
+      return {
+        top,
+        bottom,
+        answer: top * bottom,
+        details: computeLongMultiplyDetails(top, bottom, length)
+      };
+    }
+
     function makeProblem() {
+      if (state.mode === "longMultiply") return makeLongMultiplyProblem();
+      if (state.mode === "multiply") return makeMultiplyProblem();
       return state.mode === "add" ? makeAddProblem() : makeSubtractProblem();
     }
 
@@ -1250,7 +1784,7 @@
       input.maxLength = maxLength;
       input.dataset.col = String(col);
       input.dataset.role = role;
-      input.setAttribute("aria-label", `${currentPlaceNames()[col]}欄${role}`);
+      input.setAttribute("aria-label", state.mode === "multiply" || state.mode === "longMultiply" ? role : `${currentPlaceNames()[col]}欄${role}`);
       input.addEventListener("focus", () => setActiveInput(input));
       input.addEventListener("click", event => {
         event.stopPropagation();
@@ -1263,7 +1797,290 @@
       return placeNames.slice(placeNames.length - state.digits);
     }
 
+    function restoreArithmeticLayout() {
+      elements.paper.className = "paper";
+      elements.problemLine.className = "problem-line";
+      elements.placeRow.className = "math-grid place-row";
+      elements.topNoteRow.className = "math-grid note-row";
+      elements.topRow.className = "math-grid number-row";
+      elements.bottomRow.className = "math-grid number-row";
+      elements.answerRow.className = "math-grid answer-row";
+      elements.answerRow.hidden = false;
+      elements.rule.hidden = false;
+    }
+
+    function makeLongInput(kind, row, col, expected, role) {
+      const input = makeInput("answer-input long-input", col, role, 1);
+      input.dataset.kind = kind;
+      input.dataset.row = String(row);
+      input.dataset.expected = expected;
+      input.addEventListener("input", () => {
+        if (!state.touchedAnswers.includes(`${kind}-${row}-${col}`)) {
+          state.touchedAnswers.push(`${kind}-${row}-${col}`);
+        }
+        clearCheckStyles();
+        updateGuide();
+      });
+      return input;
+    }
+
+    function makeLongCells(text, kind, row, role) {
+      const fragment = document.createDocumentFragment();
+      [...text].forEach((char, col) => {
+        if (char === " ") {
+          fragment.append(makeCell("div", "long-blank", ""));
+          return;
+        }
+        fragment.append(makeLongInput(kind, row, col, char, role));
+      });
+      return fragment;
+    }
+
+    function makeLongPlaceCells(details) {
+      const row = makeCell("div", "long-cells long-place-cells", "");
+      const start = details.totalCols - details.length;
+      const places = currentPlaceNames();
+      for (let col = 0; col < details.totalCols; col += 1) {
+        if (col >= start) {
+          row.append(makeCell("div", "long-place", places[col - start]));
+        } else {
+          row.append(makeCell("div", "long-spacer", ""));
+        }
+      }
+      return row;
+    }
+
+    function makeLongProblemCells(digits, details, operator = "") {
+      const row = makeCell("div", "long-cells long-problem-cells", "");
+      const start = details.totalCols - details.length;
+      const operatorCol = Math.max(0, start - 1);
+      for (let col = 0; col < details.totalCols; col += 1) {
+        if (operator && col === operatorCol) {
+          row.append(makeCell("div", "long-operator", operator));
+        } else if (col >= start) {
+          row.append(makeCell("div", "long-digit", digits[col - start]));
+        } else {
+          row.append(makeCell("div", "long-spacer", ""));
+        }
+      }
+      return row;
+    }
+
+    function renderLongMultiplyProblem() {
+      const problem = state.problem;
+      const details = problem.details;
+      [
+        elements.problemLine,
+        elements.placeRow,
+        elements.topNoteRow,
+        elements.topRow,
+        elements.bottomRow,
+        elements.answerRow
+      ].forEach(clearElement);
+      clearGroupMarks();
+
+      elements.paper.className = "paper long-multiply-paper";
+      const gridWidth = details.totalCols * 64 + (details.totalCols - 1) * 6;
+      elements.paper.style.setProperty("--long-cols", String(details.totalCols));
+      elements.paper.style.setProperty("--long-grid-width", `${gridWidth}px`);
+      elements.paper.style.setProperty("--long-row-width", `${gridWidth + 24}px`);
+      elements.problemLine.className = "long-title";
+      elements.placeRow.className = "long-setup";
+      elements.topNoteRow.className = "long-work";
+      elements.topRow.className = "long-final";
+      elements.bottomRow.className = "multiply-score";
+      elements.answerRow.hidden = true;
+      elements.rule.hidden = true;
+      elements.practiceStage.setAttribute("aria-label", "直式乘法操作區");
+
+      elements.problemLine.append("直式乘法 ");
+      elements.problemLine.append(makeCell("span", "", `${details.length} 位數 × ${details.length} 位數`));
+
+      elements.placeRow.append(
+        makeLongPlaceCells(details),
+        makeLongProblemCells(details.topDigits, details),
+        makeLongProblemCells(details.bottomDigits, details, "×"),
+        makeCell("div", "long-rule", "")
+      );
+
+      details.partials.forEach((partial, index) => {
+        const section = document.createElement("section");
+        section.className = "long-row";
+        section.style.setProperty("--row-color", partial.color);
+        const head = document.createElement("div");
+        head.className = "long-row-head";
+        const badge = document.createElement("span");
+        badge.textContent = String(index + 1);
+        head.append(badge, document.createTextNode(`${partial.place}數 ${partial.digit} 去乘`));
+        const suffix = partial.shift ? `後面補 ${partial.shift} 個 0` : "從個位開始";
+        head.append(makeCell("small", "", suffix));
+        const cells = document.createElement("div");
+        cells.className = "long-cells";
+        cells.append(makeLongCells(partial.text, "partial", index, `${partial.place}部分積`));
+        section.append(head, cells);
+        elements.topNoteRow.append(section);
+      });
+
+      const finalHead = document.createElement("div");
+      finalHead.className = "long-row-head";
+      const finalBadge = document.createElement("span");
+      finalBadge.textContent = "+";
+      finalHead.append(finalBadge, document.createTextNode(`把 ${details.partials.length} 列加起來`));
+      const finalCells = document.createElement("div");
+      finalCells.className = "long-cells";
+      finalCells.append(makeLongCells(details.answerText, "final", 0, "最後答案"));
+      elements.topRow.append(finalHead, finalCells);
+      elements.bottomRow.append(...renderLongMultiplyScoreCards());
+
+      state.activeInput = null;
+      state.touchedAnswers = [];
+      state.checked = false;
+      setActiveInput(orderedLongInputs()[0]);
+      clearCheckStyles();
+      updateGuide();
+    }
+
+    function renderMultiplyScoreCards() {
+      const stats = state.multiplyStats;
+      const accuracy = stats.attempts ? Math.round(stats.correct / stats.attempts * 100) : 0;
+      return [
+        ["答對", `${stats.correct}/${stats.attempts}`],
+        ["正確率", `${accuracy}%`],
+        ["連續", `${stats.streak}`]
+      ].map(([label, value]) => {
+        const chip = document.createElement("div");
+        chip.className = "score-chip";
+        const number = document.createElement("span");
+        number.textContent = value;
+        chip.append(number, document.createTextNode(label));
+        return chip;
+      });
+    }
+
+    function renderLongMultiplyScoreCards() {
+      return [
+        ["完成", `${state.longMultiplyStats.completed}`],
+        ["題型", `${state.digits}×${state.digits}`],
+        ["步驟", `${state.digits} 列相加`]
+      ].map(([label, value]) => {
+        const chip = document.createElement("div");
+        chip.className = "score-chip";
+        const number = document.createElement("span");
+        number.textContent = value;
+        chip.append(number, document.createTextNode(label));
+        return chip;
+      });
+    }
+
+    function renderMultiplyProblem() {
+      const problem = state.problem;
+      const row = problem.details.row;
+      const tableFacts = problem.details.tableFacts;
+      [
+        elements.problemLine,
+        elements.placeRow,
+        elements.topNoteRow,
+        elements.topRow,
+        elements.bottomRow,
+        elements.answerRow
+      ].forEach(clearElement);
+      clearGroupMarks();
+
+      elements.paper.className = "paper multiply-paper";
+      elements.problemLine.className = "multiply-title";
+      elements.placeRow.className = "factor-tabs";
+      elements.topNoteRow.className = "multiply-table";
+      elements.topRow.className = "multiply-quiz";
+      elements.bottomRow.className = "multiply-score";
+      elements.answerRow.hidden = true;
+      elements.rule.hidden = true;
+      elements.practiceStage.setAttribute("aria-label", "九九乘法表測驗區");
+
+      elements.problemLine.append("九九乘法表 ");
+      elements.problemLine.append(makeCell("span", "", state.multiplyFactor === "all" ? "混合 9 題" : `${state.multiplyFactor} 的表`));
+      const tableToggle = document.createElement("button");
+      tableToggle.className = "action icon-only table-toggle";
+      tableToggle.type = "button";
+      tableToggle.setAttribute("aria-label", state.multiplyShowTable ? "隱藏乘法表" : "顯示乘法表");
+      tableToggle.title = state.multiplyShowTable ? "隱藏乘法表" : "顯示乘法表";
+      tableToggle.innerHTML = state.multiplyShowTable
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6A3 3 0 0 0 13.4 13.4"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.1 4.1"/><path d="M6.6 6.6C3.7 8.4 2 12 2 12s3.5 6 10 6a10.8 10.8 0 0 0 4.2-.8"/></svg>';
+      tableToggle.addEventListener("click", () => {
+        state.multiplyShowTable = !state.multiplyShowTable;
+        renderProblem();
+      });
+      elements.problemLine.append(tableToggle);
+
+      const choices = ["all", 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      choices.forEach(choice => {
+        const button = document.createElement("button");
+        button.className = "factor-tab";
+        button.type = "button";
+        button.textContent = choice === "all" ? "混合" : String(choice);
+        button.setAttribute("aria-pressed", String(state.multiplyFactor === choice));
+        button.addEventListener("click", () => {
+          state.multiplyFactor = choice;
+          resetProblem();
+        });
+        elements.placeRow.append(button);
+      });
+
+      elements.topNoteRow.hidden = !state.multiplyShowTable;
+      tableFacts.forEach(factItem => {
+        const active = factItem.left === problem.top && factItem.right === problem.bottom;
+        const fact = makeCell("div", `fact-card${active ? " active" : ""}`, `${factItem.left} × ${factItem.right} = ${factItem.answer}`);
+        elements.topNoteRow.append(fact);
+      });
+
+      const equation = document.createElement("div");
+      equation.className = "quiz-equation";
+      equation.append(
+        makeCell("span", "", String(problem.top)),
+        document.createTextNode("×"),
+        makeCell("span", "", String(problem.bottom)),
+        document.createTextNode("="),
+        document.createTextNode("?")
+      );
+      const input = makeInput("answer-input multiply-answer", 0, "九九乘法答案", 2);
+      input.addEventListener("input", () => {
+        clearCheckStyles();
+        updateGuide();
+      });
+      const answerRow = document.createElement("div");
+      answerRow.className = "multiply-answer-row";
+      const submit = document.createElement("button");
+      submit.className = "action icon-only multiply-submit";
+      submit.type = "button";
+      submit.setAttribute("aria-label", "提交答案");
+      submit.title = "提交答案";
+      submit.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+      submit.addEventListener("click", () => {
+        scoreMultiplyAnswer();
+      });
+      answerRow.append(input, submit);
+      elements.topRow.append(equation, answerRow);
+      elements.bottomRow.append(...renderMultiplyScoreCards());
+
+      state.activeInput = null;
+      state.touchedAnswers = [];
+      state.checked = false;
+      setActiveInput(input);
+      clearCheckStyles();
+      updateGuide();
+    }
+
     function renderProblem() {
+      if (state.mode === "longMultiply") {
+        renderLongMultiplyProblem();
+        return;
+      }
+
+      if (state.mode === "multiply") {
+        renderMultiplyProblem();
+        return;
+      }
+
       const problem = state.problem;
       const length = state.digits;
       const place = currentPlaceNames();
@@ -1271,6 +2088,7 @@
       const bottomText = visibleDigits(problem.bottom, length);
       const isAdd = state.mode === "add";
       const operator = isAdd ? "+" : "−";
+      restoreArithmeticLayout();
       elements.paper.style.setProperty("--cols", String(length));
       elements.practiceStage.setAttribute("aria-label", isAdd ? "進位加法操作區" : "借位減法操作區");
 
@@ -1487,6 +2305,28 @@
       return [...document.querySelectorAll(".bottom-digit")];
     }
 
+    function orderedLongInputs() {
+      const inputs = [];
+      const details = state.problem?.details;
+      const rowCount = details?.partials.length ?? state.digits;
+      const colCount = details?.totalCols ?? state.digits * 2;
+      for (let row = 0; row < rowCount; row += 1) {
+        for (let col = colCount - 1; col >= 0; col -= 1) {
+          const input = document.querySelector(`.long-input[data-kind="partial"][data-row="${row}"][data-col="${col}"]`);
+          if (input) inputs.push(input);
+        }
+      }
+      for (let col = colCount - 1; col >= 0; col -= 1) {
+        const input = document.querySelector(`.long-input[data-kind="final"][data-row="0"][data-col="${col}"]`);
+        if (input) inputs.push(input);
+      }
+      return inputs;
+    }
+
+    function isLongInputDone(input) {
+      return input.value === input.dataset.expected;
+    }
+
     function clearCheckStyles() {
       document.querySelectorAll(".good, .bad, .focus-target").forEach(element => {
         element.classList.remove("good", "bad", "focus-target");
@@ -1502,6 +2342,15 @@
       document.querySelectorAll(".note-input, .answer-input").forEach(item => {
         item.classList.toggle("focus-target", item === input);
       });
+      if (state.mode === "longMultiply") {
+        const row = input.dataset.kind === "final" ? "最後答案" : `第 ${Number(input.dataset.row) + 1} 列`;
+        elements.padStatus.textContent = `直式乘法：${row}，從右往左填。`;
+        return;
+      }
+      if (state.mode === "multiply") {
+        elements.padStatus.textContent = "九九乘法：按勾勾或下一題都會計分。";
+        return;
+      }
       const place = currentPlaceNames()[Number(input.dataset.col)];
       elements.padStatus.textContent = `${place}欄：${input.dataset.role}`;
     }
@@ -1515,9 +2364,24 @@
       if (key === "clear") {
         input.value = "";
       } else if (key === "next") {
+        if (state.mode === "longMultiply") {
+          const inputs = orderedLongInputs();
+          const index = inputs.indexOf(input);
+          setActiveInput(inputs[Math.min(inputs.length - 1, index + 1)] || input);
+          return;
+        }
+        if (state.mode === "multiply") {
+          if (input.value.trim() && !state.problemCounted) {
+            scoreMultiplyAnswer();
+          }
+          resetProblem();
+          return;
+        }
         const nextCol = Math.max(0, Number(input.dataset.col) - 1);
         setActiveInput(answerInputs()[nextCol]);
         return;
+      } else if (state.mode === "multiply" && input.classList.contains("multiply-answer")) {
+        input.value = `${input.value}${key}`.slice(0, Number(input.maxLength) || 2);
       } else {
         input.value = key;
       }
@@ -1583,6 +2447,17 @@
 
     function getNextTask() {
       return state.mode === "add" ? getAddNextTask() : getSubtractNextTask();
+    }
+
+    function getLongMultiplyNextTask() {
+      const input = orderedLongInputs().find(item => !isLongInputDone(item));
+      if (!input) return { type: "done" };
+      return {
+        type: input.dataset.kind,
+        row: Number(input.dataset.row),
+        col: Number(input.dataset.col),
+        input
+      };
     }
 
     function updateSubtractGuide() {
@@ -1708,12 +2583,147 @@
       elements.resultBox.classList.add("good");
     }
 
+    function updateMultiplyGuide() {
+      document.querySelectorAll(".focus-target").forEach(element => element.classList.remove("focus-target"));
+      elements.miniSteps.forEach((item, index) => {
+        item.classList.remove("active", "done");
+        if (state.problemCounted) {
+          item.classList.add("done");
+        } else if (index === 1 || index === 2) {
+          item.classList.add("active");
+        }
+      });
+
+      const input = answerInputs()[0];
+      const answered = Boolean(input?.value.trim());
+      elements.stepNumber.textContent = answered ? "測" : "背";
+      elements.coachTitle.textContent = answered ? "準備檢查" : `背 ${state.problem.details.row} 的乘法表`;
+      elements.coachText.textContent = answered
+        ? "按答案旁邊的勾勾，或按下一題直接計分。"
+        : `看背誦表，再回答 ${state.problem.top} × ${state.problem.bottom}。`;
+      elements.resultText.textContent = answered
+        ? "答案寫好了，可以提交或直接下一題。"
+        : `${state.problem.top} × ${state.problem.bottom} = ?`;
+      input?.classList.add("focus-target");
+      setActiveInput(input);
+    }
+
+    function updateLongMultiplyGuide() {
+      const task = getLongMultiplyNextTask();
+      const details = state.problem.details;
+      const finalStepIndex = details.partials.length + 1;
+      document.querySelectorAll(".focus-target").forEach(element => element.classList.remove("focus-target"));
+      elements.miniSteps.forEach((item, index) => {
+        item.classList.remove("active", "done");
+        const activeIndex = task.type === "partial" ? task.row + 1 : task.type === "final" ? finalStepIndex : -1;
+        if (task.type === "done" || (activeIndex > -1 && index < activeIndex)) {
+          item.classList.add("done");
+        } else if (index === activeIndex) {
+          item.classList.add("active");
+        }
+      });
+
+      if (task.type === "partial") {
+        const partial = details.partials[task.row];
+        elements.stepNumber.textContent = String(task.row + 1);
+        elements.coachTitle.textContent = `${partial.place}數 ${partial.digit} 去乘`;
+        elements.coachText.textContent = partial.shift
+          ? `算出 ${state.problem.top} × ${partial.digit}，再在後面補 ${partial.shift} 個 0。`
+          : `算出 ${state.problem.top} × ${partial.digit}，從右邊開始寫。`;
+        elements.resultText.textContent = `填第 ${task.row + 1} 列部分積，現在寫這一格。`;
+        task.input.classList.add("focus-target");
+        setActiveInput(task.input);
+        return;
+      }
+
+      if (task.type === "final") {
+        const rowNames = details.partials.map(partial => `${partial.place}列`).join("、");
+        elements.stepNumber.textContent = "+";
+        elements.coachTitle.textContent = `把 ${details.partials.length} 列加起來`;
+        elements.coachText.textContent = `把${rowNames}加起來，就是最後答案。`;
+        elements.resultText.textContent = "填最後答案，從右邊開始寫。";
+        task.input.classList.add("focus-target");
+        setActiveInput(task.input);
+        return;
+      }
+
+      elements.stepNumber.textContent = "好";
+      elements.coachTitle.textContent = "全部完成";
+      elements.coachText.textContent = "可以按檢查看看，也可以換下一題。";
+      elements.resultText.textContent = "做完了，按檢查。";
+      elements.resultBox.classList.add("good");
+    }
+
     function updateGuide() {
+      if (state.mode === "longMultiply") {
+        updateLongMultiplyGuide();
+        return;
+      }
+      if (state.mode === "multiply") {
+        updateMultiplyGuide();
+        return;
+      }
       if (state.mode === "add") {
         updateAddGuide();
         return;
       }
       updateSubtractGuide();
+    }
+
+    function scoreMultiplyAnswer() {
+      state.checked = true;
+      clearCheckStyles();
+      const input = answerInputs()[0];
+      const expected = String(state.problem.answer);
+      const good = input?.value.trim() === expected;
+      input?.classList.add(good ? "good" : "bad");
+
+      if (!state.problemCounted) {
+        state.multiplyStats.attempts += 1;
+        if (good) {
+          state.multiplyStats.correct += 1;
+          state.multiplyStats.streak += 1;
+        } else {
+          state.multiplyStats.streak = 0;
+        }
+        state.problemCounted = true;
+        updateStats();
+      }
+
+      elements.resultBox.classList.toggle("good", good);
+      elements.resultBox.classList.toggle("bad", !good);
+      elements.resultText.textContent = good
+        ? `答對了！${state.problem.top} × ${state.problem.bottom} = ${state.problem.answer}。`
+        : `再背一次：${state.problem.top} × ${state.problem.bottom} = ${state.problem.answer}。`;
+      return good;
+    }
+
+    function checkMultiplyWork() {
+      scoreMultiplyAnswer();
+    }
+
+    function checkLongMultiplyWork() {
+      state.checked = true;
+      clearCheckStyles();
+      let ok = true;
+      orderedLongInputs().forEach(input => {
+        const good = isLongInputDone(input);
+        input.classList.add(good ? "good" : "bad");
+        if (!good) ok = false;
+      });
+
+      if (ok && !state.problemCounted) {
+        state.completedCount += 1;
+        state.longMultiplyStats.completed += 1;
+        state.problemCounted = true;
+        updateStats();
+      }
+
+      elements.resultBox.classList.toggle("good", ok);
+      elements.resultBox.classList.toggle("bad", !ok);
+      elements.resultText.textContent = ok
+        ? `完成。${state.problem.top} × ${state.problem.bottom} = ${state.problem.answer}。`
+        : "看紅色的格子，再修一次。記得每一列都要對齊。";
     }
 
     function checkAddWork() {
@@ -1759,6 +2769,14 @@
     }
 
     function checkWork() {
+      if (state.mode === "longMultiply") {
+        checkLongMultiplyWork();
+        return;
+      }
+      if (state.mode === "multiply") {
+        checkMultiplyWork();
+        return;
+      }
       if (state.mode === "add") {
         checkAddWork();
         return;
@@ -1884,9 +2902,19 @@
     }
 
     function renderMiniSteps() {
-      const steps = state.mode === "add"
-        ? ["算這一欄加起來", "有進位就寫上方 1", "寫答案、往左做", "完成後檢查"]
-        : ["看這一欄夠不夠減", "不夠就劃左邊、寫少 1", "寫補數、圈一組", "寫答案"];
+      const longPlaces = [...currentPlaceNames()].reverse();
+      const longSteps = [
+        "題目排整齊",
+        ...longPlaces.map((name, index) => index ? `${name}位列補 ${index} 個 0` : "個位列部分積"),
+        "所有列加起來"
+      ];
+      const steps = state.mode === "longMultiply"
+        ? longSteps
+        : state.mode === "multiply"
+        ? ["選一排來背", "看測驗題", "輸入答案", "檢查得分"]
+        : state.mode === "add"
+          ? ["算這一欄加起來", "有進位就寫上方 1", "寫答案、往左做", "完成後檢查"]
+          : ["看這一欄夠不夠減", "不夠就劃左邊、寫少 1", "寫補數、圈一組", "寫答案"];
       elements.miniStepsList.replaceChildren(...steps.map((text, index) => {
         const item = document.createElement("li");
         const badge = document.createElement("span");
@@ -1901,24 +2929,59 @@
       elements.modeButtons.forEach(button => {
         button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode));
       });
+      elements.digitsGroup.hidden = state.mode === "multiply";
+      elements.nextKey.textContent = state.mode === "multiply" ? "下一題" : "左一格";
     }
 
     function setMode(mode) {
       if (state.mode === mode) return;
       state.mode = mode;
-      document.title = mode === "add" ? "進位加法練習板" : "借位減法練習板";
+      document.title = mode === "longMultiply"
+        ? "直式乘法練習板"
+        : mode === "multiply"
+        ? "九九乘法表練習板"
+        : mode === "add"
+          ? "進位加法練習板"
+          : "借位減法練習板";
       updateModeButtons();
       renderHelpPanel();
       renderMiniSteps();
+      updateStats();
       resetProblem();
     }
 
     function updateStats() {
+      if (state.mode === "multiply") {
+        elements.statsLabel.textContent = "得分";
+        elements.completedCount.textContent = `${state.multiplyStats.correct}/${state.multiplyStats.attempts}`;
+        elements.statsSuffix.textContent = ` 題 連 ${state.multiplyStats.streak}`;
+        if (state.problem) {
+          elements.bottomRow.replaceChildren(...renderMultiplyScoreCards());
+        }
+        return;
+      }
+      if (state.mode === "longMultiply") {
+        elements.statsLabel.textContent = "完成";
+        elements.completedCount.textContent = String(state.longMultiplyStats.completed);
+        elements.statsSuffix.textContent = " 題";
+        if (state.problem) {
+          elements.bottomRow.replaceChildren(...renderLongMultiplyScoreCards());
+        }
+        return;
+      }
+      elements.statsLabel.textContent = "完成";
       elements.completedCount.textContent = String(state.completedCount);
+      elements.statsSuffix.textContent = " 題";
     }
 
     function resetStats() {
-      state.completedCount = 0;
+      if (state.mode === "multiply") {
+        state.multiplyStats = { correct: 0, attempts: 0, streak: 0 };
+      } else if (state.mode === "longMultiply") {
+        state.longMultiplyStats = { completed: 0 };
+      } else {
+        state.completedCount = 0;
+      }
       updateStats();
     }
 
@@ -1930,6 +2993,7 @@
       button.addEventListener("click", () => {
         state.digits = Number(button.dataset.digits);
         elements.digitButtons.forEach(item => item.setAttribute("aria-pressed", String(item === button)));
+        renderMiniSteps();
         resetProblem();
       });
     });
